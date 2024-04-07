@@ -1,10 +1,11 @@
 import { witcher } from "../module/config.js";
-import WitcherItemSheet from "../module/sheets/WitcherItemSheet.js";
-import WitcherActorSheet from "../module/sheets/WitcherActorSheet.js";
+import WitcherItemSheet from "../module/items/WitcherItemSheet.js";
 import WitcherItem from "../module/witcherItem.js";
 import WitcherActor from "../module/witcherActor.js";
 import * as Chat from "../module/chat.js";
 import { registerSettings } from "../module/settings.js";
+import WitcherCharacterSheet from "../module/actors/WitcherCharacterSheet.js";
+import WitcherMonsterSheet from "../module/actors/WitcherMonsterSheet.js";
 
 
 async function preloadHandlebarsTemplates() {
@@ -15,7 +16,7 @@ async function preloadHandlebarsTemplates() {
         "systems/TheWitcherTRPG/templates/partials/character-header.html",
         "systems/TheWitcherTRPG/templates/partials/tab-skills.html",
         "systems/TheWitcherTRPG/templates/partials/tab-profession.html",
-        "systems/TheWitcherTRPG/templates/partials/tab-background.html",
+        "systems/TheWitcherTRPG/templates/partials/tab-background.hbs",
         "systems/TheWitcherTRPG/templates/partials/tab-inventory.html",
         "systems/TheWitcherTRPG/templates/partials/tab-inventory-diagrams.html",
         "systems/TheWitcherTRPG/templates/partials/tab-inventory-valuables.html",
@@ -51,7 +52,14 @@ Hooks.once("init", function () {
     Items.registerSheet("witcher", WitcherItemSheet, { makeDefault: true });
 
     Actors.unregisterSheet("core", ActorSheet);
-    Actors.registerSheet("witcher", WitcherActorSheet, { makeDefault: true });
+    Actors.registerSheet("witcher", WitcherCharacterSheet, { 
+        makeDefault: true,
+        types: ['character']
+    });
+    Actors.registerSheet("witcher", WitcherMonsterSheet, { 
+        makeDefault: true,
+        types: ['monster', 'loot']
+    });
 
     preloadHandlebarsTemplates();
     registerSettings();
@@ -135,13 +143,13 @@ Hooks.once("polyglot.init", (LanguageProvider) => {
             let known_languages = new Set();
             let literate_languages = new Set();
             known_languages.add("common")
-            if (actor.system.skills.int.eldersp.isProffession || actor.system.skills.int.eldersp.isPickup || actor.system.skills.int.eldersp.isLearned || actor.system.skills.int.eldersp.value > 0) {
+            if (actor.system.skills.int.eldersp.isProfession || actor.system.skills.int.eldersp.isPickup || actor.system.skills.int.eldersp.isLearned || actor.system.skills.int.eldersp.value > 0) {
                 known_languages.add("elder")
             }
-            if (actor.system.skills.int.dwarven.isProffession || actor.system.skills.int.dwarven.isPickup || actor.system.skills.int.dwarven.isLearned || actor.system.skills.int.dwarven.value > 0) {
+            if (actor.system.skills.int.dwarven.isProfession || actor.system.skills.int.dwarven.isPickup || actor.system.skills.int.dwarven.isLearned || actor.system.skills.int.dwarven.value > 0) {
                 known_languages.add("dwarven")
             }
-            if (actor.system.skills.int.commonsp.isProffession || actor.system.skills.int.commonsp.isPickup || actor.system.skills.int.commonsp.isLearned || actor.system.skills.int.commonsp.value > 0) {
+            if (actor.system.skills.int.commonsp.isProfession || actor.system.skills.int.commonsp.isPickup || actor.system.skills.int.commonsp.isLearned || actor.system.skills.int.commonsp.value > 0) {
                 known_languages.add("common")
             }
             return [known_languages, literate_languages];
