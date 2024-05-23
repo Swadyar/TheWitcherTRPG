@@ -1,53 +1,49 @@
-import { witcher } from "./scripts/config.js";
+import { WITCHER } from "./setup/config.js";
 import * as Chat from "./scripts/chat.js";
-import { registerSettings } from "./scripts/settings.js";
-
-import CommonActorData from "./data/actor/commonActorData.js"
-import CharacterData from "./data/actor/characterData.js";
-
-import LootData from "./data/actor/lootData.js";
+import * as Attack from "./scripts/attack.js"
+import { registerSettings } from "./setup/settings.js";
 
 import WitcherItem from "./item/witcherItem.js";
-import WitcherItemSheet from "./item/sheets/WitcherItemSheet.js";
-import WitcherWeaponSheet from "./item/sheets/WitcherWeaponSheet.js";
-import WitcherDiagramSheet from "./item/sheets/WitcherDiagramSheet.js";
-
 import WitcherActor from "./actor/witcherActor.js";
-import WitcherCharacterSheet from "./actor/sheets/WitcherCharacterSheet.js";
-import WitcherMonsterSheet from "./actor/sheets/WitcherMonsterSheet.js";
-import WitcherLootSheet from "./actor/sheets/WitcherLootSheet.js";
-import MonsterData from "./data/actor/monsterData.js";
 
+import { registerDataModels } from "./setup/registerDataModels.js";
+import { registerSheets } from "./setup/registerSheets.js";
 
 async function preloadHandlebarsTemplates() {
     const templatePath = [
-        "systems/TheWitcherTRPG/templates/sheets/actor/character-sheet.html",
-        "systems/TheWitcherTRPG/templates/sheets/actor/monster-sheet.html",
-        "systems/TheWitcherTRPG/templates/sheets/actor/loot-sheet.html",
-        "systems/TheWitcherTRPG/templates/partials/character-header.html",
-        "systems/TheWitcherTRPG/templates/partials/tab-skills.html",
-        "systems/TheWitcherTRPG/templates/partials/tab-profession.html",
+        "systems/TheWitcherTRPG/templates/sheets/actor/character-sheet.hbs",
+        "systems/TheWitcherTRPG/templates/sheets/actor/monster-sheet.hbs",
+        "systems/TheWitcherTRPG/templates/sheets/actor/loot-sheet.hbs",
+
+        "systems/TheWitcherTRPG/templates/partials/character-header.hbs",
+        "systems/TheWitcherTRPG/templates/partials/tab-skills.hbs",
+        "systems/TheWitcherTRPG/templates/partials/tab-profession.hbs",
         "systems/TheWitcherTRPG/templates/partials/tab-background.hbs",
-        "systems/TheWitcherTRPG/templates/partials/tab-inventory.html",
-        "systems/TheWitcherTRPG/templates/partials/tab-inventory-diagrams.html",
-        "systems/TheWitcherTRPG/templates/partials/tab-inventory-valuables.html",
-        "systems/TheWitcherTRPG/templates/partials/tab-inventory-mounts.html",
-        "systems/TheWitcherTRPG/templates/partials/tab-inventory-runes-glyphs.html",
-        "systems/TheWitcherTRPG/templates/partials/tab-magic.html",
-        "systems/TheWitcherTRPG/templates/partials/crit-wounds-table.html",
-        "systems/TheWitcherTRPG/templates/partials/substances.html",
-        "systems/TheWitcherTRPG/templates/partials/monster-skill-tab.html",
-        "systems/TheWitcherTRPG/templates/partials/monster-inventory-tab.html",
-        "systems/TheWitcherTRPG/templates/partials/monster-details-tab.html",
-        "systems/TheWitcherTRPG/templates/partials/monster-spell-tab.html",
-        "systems/TheWitcherTRPG/templates/partials/skill-display.html",
-        "systems/TheWitcherTRPG/templates/partials/monster-skill-display.html",
-        "systems/TheWitcherTRPG/templates/partials/loot-item-display.html",
-        "systems/TheWitcherTRPG/templates/partials/item-header.html",
-        "systems/TheWitcherTRPG/templates/partials/item-image.html",
-        "systems/TheWitcherTRPG/templates/partials/associated-item.html",
-        "systems/TheWitcherTRPG/templates/sheets/verbal-combat.html",
-        "systems/TheWitcherTRPG/templates/sheets/weapon-attack.html"
+        "systems/TheWitcherTRPG/templates/partials/tab-inventory.hbs",
+        "systems/TheWitcherTRPG/templates/partials/tab-inventory-diagrams.hbs",
+        "systems/TheWitcherTRPG/templates/partials/tab-inventory-valuables.hbs",
+        "systems/TheWitcherTRPG/templates/partials/tab-inventory-mounts.hbs",
+        "systems/TheWitcherTRPG/templates/partials/tab-inventory-runes-glyphs.hbs",
+        "systems/TheWitcherTRPG/templates/partials/tab-magic.hbs",
+        "systems/TheWitcherTRPG/templates/partials/crit-wounds-table.hbs",
+        "systems/TheWitcherTRPG/templates/partials/substances.hbs",
+        "systems/TheWitcherTRPG/templates/partials/monster-skill-tab.hbs",
+        "systems/TheWitcherTRPG/templates/partials/monster-inventory-tab.hbs",
+        "systems/TheWitcherTRPG/templates/partials/monster-details-tab.hbs",
+        "systems/TheWitcherTRPG/templates/partials/monster-spell-tab.hbs",
+        "systems/TheWitcherTRPG/templates/partials/skill-display.hbs",
+        "systems/TheWitcherTRPG/templates/partials/monster-skill-display.hbs",
+        "systems/TheWitcherTRPG/templates/partials/loot-item-display.hbs",
+        "systems/TheWitcherTRPG/templates/partials/item-header.hbs",
+        "systems/TheWitcherTRPG/templates/partials/item-image.hbs",
+        "systems/TheWitcherTRPG/templates/partials/associated-item.hbs",
+
+        "systems/TheWitcherTRPG/templates/sheets/investigation/mystery-sheet.hbs",
+        "systems/TheWitcherTRPG/templates/partials/investigation/clue-display.hbs",
+        "systems/TheWitcherTRPG/templates/partials/investigation/obstacle-display.hbs",
+
+        "systems/TheWitcherTRPG/templates/sheets/verbal-combat.hbs",
+        "systems/TheWitcherTRPG/templates/sheets/weapon-attack.hbs"
     ];
     return loadTemplates(templatePath);
 }
@@ -55,49 +51,26 @@ async function preloadHandlebarsTemplates() {
 Hooks.once("init", function () {
     console.log("TheWitcherTRPG | init system");
 
-   foundry.utils.mergeObject(CONFIG.Actor.dataModels, {
-       // The keys are the types defined in our template.json
-       baseActor: CommonActorData,
-       character: CharacterData,
-       monster: MonsterData,
-       loot: LootData
-     })
-
-    CONFIG.witcher = witcher
+    CONFIG.WITCHER = WITCHER;
+    CONFIG.statusEffects = CONFIG.WITCHER.statusEffects;
     CONFIG.Item.documentClass = WitcherItem;
     CONFIG.Actor.documentClass = WitcherActor;
 
-    Items.unregisterSheet("core", ItemSheet);
-    Items.registerSheet("witcher", WitcherItemSheet, { makeDefault: true });
-    Items.registerSheet("witcher", WitcherWeaponSheet, { 
-        makeDefault: true,
-        types: ['weapon']
-    });
-    Items.registerSheet("witcher", WitcherDiagramSheet, { 
-        makeDefault: true,
-        types: ['diagrams']
-    });
-
-    Actors.unregisterSheet("core", ActorSheet);
-    Actors.registerSheet("witcher", WitcherCharacterSheet, { 
-        makeDefault: true,
-        types: ['character']
-    });
-    Actors.registerSheet("witcher", WitcherMonsterSheet, { 
-        makeDefault: true,
-        types: ['monster']
-    });
-    Actors.registerSheet("witcher", WitcherLootSheet, { 
-        makeDefault: true,
-        types: ['loot']
-    });
-
+    registerDataModels();
+    registerSheets();
     preloadHandlebarsTemplates();
     registerSettings();
 });
 
-Hooks.on("renderChatLog", (app, html, data) => Chat.addChatListeners(html));
 
+Hooks.on("renderChatLog", (app, html, data) => {
+    Chat.addChatListeners(html)
+}
+);
+
+Hooks.on('renderChatMessage', (message, html, data) => {
+    Attack.chatMessageListeners(message, html)
+});
 
 /* -------------------------------------------- */
 /*  Hotbar Macros                               */
@@ -114,23 +87,15 @@ Hooks.once("ready", async function () {
         let chat = document.getElementById("chat-log")
         if (chat) { chat.classList.add("witcher-style") }
     }
-
-    // Override custom effects with HUD effects from the compendium
-    if (game.settings.get("TheWitcherTRPG", "loadCustomStatusesFromCompendium")) {
-        let result = await WitcherItem.prototype.getGameEffects();
-        if (result && result.length > 0) {
-            CONFIG.statusEffects = result;
-        }
-    }
 });
 
 Hooks.once("dragRuler.ready", (SpeedProvider) => {
     class FictionalGameSystemSpeedProvider extends SpeedProvider {
         get colors() {
             return [
-                { id: "walk", default: 0x00FF00, name: "my-module-id.speeds.walk" },
-                { id: "dash", default: 0xFFFF00, name: "my-module-id.speeds.dash" },
-                { id: "run", default: 0xFF8000, name: "my-module-id.speeds.run" }
+                { id: "walk", default: 0x00FF00, name: "witcher.speeds.walk" },
+                { id: "dash", default: 0xFFFF00, name: "witcher.speeds.dash" },
+                { id: "run", default: 0xFF8000, name: "witcher.speeds.run" }
             ]
         }
 
@@ -152,7 +117,7 @@ Hooks.once("dragRuler.ready", (SpeedProvider) => {
 
 Hooks.once("polyglot.init", (LanguageProvider) => {
     class FictionalGameSystemLanguageProvider extends LanguageProvider {
-        languages = { 
+        languages = {
             "common": { label: "Common", font: "Thorass", },
             "dwarven": { label: "Dwarven", font: "Dethek", },
             "elder": { label: "Elder Speech", font: "Espruar", }
@@ -224,8 +189,7 @@ async function createBoilerplateMacro(data, slot) {
             return ui.notifications.warn("You can only create macro buttons with the original character");
         }
         const command =
-            `actor = game.actors.get('${foundActor.id}');
-actor.rollItem("${weapon._id}")`;
+            `actor = game.actors.get('${foundActor.id}'); actor.rollItem("${weapon._id}")`;
         let macro = game.macros.find(m => (m.name === weapon.name) && (m.command === command));
         if (!macro) {
             macro = await Macro.create({
@@ -253,8 +217,7 @@ actor.rollItem("${weapon._id}")`;
             return ui.notifications.warn("You can only create macro buttons with the original character");
         }
         const command =
-            `actor = game.actors.get('${foundActor.id}');
-actor.rollSpell("${spell._id}")`;
+            `actor = game.actors.get('${foundActor.id}'); actor.rollSpell("${spell._id}")`;
         let macro = game.macros.find(m => (m.name === spell.name) && (m.command === command));
         if (!macro) {
             macro = await Macro.create({
@@ -280,14 +243,14 @@ Handlebars.registerHelper("getOwnedComponentCount", function (actor, componentNa
 });
 
 Handlebars.registerHelper("getSetting", function (setting) {
-  return game.settings.get("TheWitcherTRPG", setting);
+    return game.settings.get("TheWitcherTRPG", setting);
 });
 
 Handlebars.registerHelper("window", function (...props) {
-  props.pop();
-  return props.reduce((result, prop) => result[prop], window);
+    props.pop();
+    return props.reduce((result, prop) => result[prop], window);
 });
 
 Handlebars.registerHelper("includes", function (csv, substr) {
-  return csv.split(",").map(v => v.trim()).includes(substr);
+    return csv.split(",").map(v => v.trim()).includes(substr);
 });

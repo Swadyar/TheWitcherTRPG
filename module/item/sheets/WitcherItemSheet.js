@@ -17,13 +17,13 @@ export default class WitcherItemSheet extends ItemSheet {
   }
 
   get template() {
-    return `systems/TheWitcherTRPG/templates/sheets/${this.object.type}-sheet.html`;
+    return `systems/TheWitcherTRPG/templates/sheets/${this.object.type}-sheet.hbs`;
   }
 
   /** @override */
   getData() {
     const data = super.getData();
-    data.config = CONFIG.witcher;
+    data.config = CONFIG.WITCHER;
 
     this.options.classes.push(`item-${this.item.type}`)
     data.data = data.item?.system

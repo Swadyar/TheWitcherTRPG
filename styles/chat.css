@@ -1,0 +1,13 @@
+.percentageFailed {
+    background-color: firebrick;
+    color: wheat;
+}
+
+.percentageSuccess {
+    background-color: greenyellow;
+}
+
+.apply-status {
+    display: flex;
+    gap: 5px;
+}

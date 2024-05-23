@@ -8,95 +8,33 @@ export default class WitcherMonsterSheet extends ActorSheet {
       classes: ["witcher", "sheet", "actor"],
       width: 1120,
       height: 600,
-      template: "systems/TheWitcherTRPG/templates/sheets/actor/actor-sheet.html",
+      template: "systems/TheWitcherTRPG/templates/sheets/actor/actor-sheet.hbs",
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "description" }],
     });
   }
 
-   getData() {
+  getData() {
     let context = super.getData();
     context.system = context.actor.system;
     context.weapons = context.actor.getList("weapon");
-    context.armors = context.actor.items.filter(function (item) {
-      return item.type == "armor" ||
-        (item.type == "enhancement" && item.system.type == "armor" && item.system.applied == false)
-    });
-    context.enhancements = context.items.filter(i => i.type == "enhancement" && i.system.type != "armor" && !i.system.applied);
-    context.runeItems = context.enhancements.filter(e => e.system.type == "rune");
-    context.glyphItems = context.enhancements.filter(e => e.system.type == "glyph");
+    context.armors = context.actor.getList("armor");
+
+    context.valuables = context.actor.getList("valuable");
+    context.allComponents = context.actor.getList("component");
+    context.enhancements = context.items?.filter(i => i.type == "enhancement" && !i.system.applied);
+    context.loot = context.actor.getList("mount").concat(context.actor.getList("mutagens")).concat(context.actor.getList("container")).concat(context.actor.getList("alchemical")).concat(context.actor.getList("diagrams"));
 
     context.totalWeight = context.items.weight() + calc_currency_weight(context.actor.system.currency);
     context.totalCost = context.items.cost();
 
-    this._prepareLoot(context);
-    this._prepareCrafting(context);
-    this._prepareSubstances(context);
-    this._prepareValuables(context);
-
     context.isGM = game.user.isGM
+
+    console.log(context)
 
     return context;
   }
 
-  _prepareLoot(context) {
-    let items = context.actor.items;
-    context.loots = items.filter(i => i.type == "component" ||
-        i.type == "crafting-material" ||
-        i.type == "enhancement" ||
-        i.type == "valuable" ||
-        i.type == "animal-parts" ||
-        i.type == "diagrams" ||
-        i.type == "armor" ||
-        i.type == "alchemical" ||
-        i.type == "enhancement" ||
-        i.type == "mutagen");
-  }
-
-  _prepareSubstances(context) {
-    let actor = context.actor;
-
-    context.substancesVitriol = actor.getSubstance("vitriol");
-    context.vitriolCount = context.substancesVitriol.sum("quantity");
-    context.substancesRebis = actor.getSubstance("rebis");
-    context.rebisCount = context.substancesRebis.sum("quantity");
-    context.substancesAether = actor.getSubstance("aether");
-    context.aetherCount = context.substancesAether.sum("quantity");
-    context.substancesQuebrith = actor.getSubstance("quebrith");
-    context.quebrithCount = context.substancesQuebrith.sum("quantity");
-    context.substancesHydragenum = actor.getSubstance("hydragenum");
-    context.hydragenumCount = context.substancesHydragenum.sum("quantity");
-    context.substancesVermilion = actor.getSubstance("vermilion");
-    context.vermilionCount = context.substancesVermilion.sum("quantity");
-    context.substancesSol = actor.getSubstance("sol");
-    context.solCount = context.substancesSol.sum("quantity");
-    context.substancesCaelum = actor.getSubstance("caelum");
-    context.caelumCount = context.substancesCaelum.sum("quantity");
-    context.substancesFulgur = actor.getSubstance("fulgur");
-    context.fulgurCount = context.substancesFulgur.sum("quantity");
-  }
-
-  _prepareCrafting(context) {
-    context.allComponents = context.actor.getList("component");
-    context.craftingMaterials = context.allComponents.filter(i => i.system.type == "crafting-material" || i.system.type == "component");
-    context.ingotsAndMinerals = context.allComponents.filter(i => i.system.type == "minerals");
-    context.hidesAndAnimalParts = context.allComponents.filter(i => i.system.type == "animal-parts");
-  }
-
-  _prepareValuables(context) {
-    let items = context.actor.items;
-    context.valuables = items.filter(i => i.type == "valuable");
-
-    context.clothingAndContainers = context.valuables.filter(i => i.system.type == "clothing" || i.system.type == "containers");
-    context.general = context.valuables.filter(i => i.system.type == "genera" || i.system.type == "general" || !i.system.type);
-    context.foodAndDrinks = context.valuables.filter(i => i.system.type == "food-drink");
-    context.toolkits = context.valuables.filter(i => i.system.type == "toolkit");
-    context.questItems = context.valuables.filter(i => i.system.type == "quest-item");
-
-    context.mounts = items.filter(i => i.type == "mount");
-    context.mountAccessories = items.filter(i => i.type == "valuable" && i.system.type == "mount-accessories");
-   }
-
-   activateListeners(html) {
+  activateListeners(html) {
     super.activateListeners(html);
 
     html.find(".inline-edit").change(this._onInlineEdit.bind(this));
@@ -109,7 +47,6 @@ export default class WitcherMonsterSheet extends ActorSheet {
     html.find(".item-buy").on("click", this._onItemBuy.bind(this));
     html.find(".item-hide").on("click", this._onItemHide.bind(this));
     html.find(".add-item").on("click", this._onItemAdd.bind(this));
-    html.find(".item-substance-display").on("click", this._onSubstanceDisplay.bind(this));
 
     html.find("input").focusin(ev => this._onFocusIn(ev));
 
@@ -185,7 +122,7 @@ export default class WitcherMonsterSheet extends ActorSheet {
   _onInlineEdit(event) {
     event.preventDefault();
     let element = event.currentTarget;
-    let itemId = element.closest(".item").dataset.itemId;   
+    let itemId = element.closest(".item").dataset.itemId;
     let item = this.actor.items.get(itemId);
     let field = element.dataset.field;
     // Edit checkbox values
@@ -198,6 +135,10 @@ export default class WitcherMonsterSheet extends ActorSheet {
     }
 
     return item.update({ [field]: value });
+  }
+
+  _onFocusIn(event) {
+    event.currentTarget.select();
   }
 
   _onItemEdit(event) {
@@ -327,8 +268,8 @@ export default class WitcherMonsterSheet extends ActorSheet {
       }
 
       if (buyerActor) {
-        buyerActor.update({ [`system.currency.${coinType}`]: buyerActor.system.currency[coinType] - totalCost }) 
-       }
+        buyerActor.update({ [`system.currency.${coinType}`]: buyerActor.system.currency[coinType] - totalCost })
+      }
       this.actor.update({ [`system.currency.${coinType}`]: Number(this.actor.system.currency[coinType]) + Number(totalCost) })
     }
   }
@@ -345,11 +286,5 @@ export default class WitcherMonsterSheet extends ActorSheet {
     let section = event.currentTarget.closest(".item");
     let editor = $(section).find(".item-info")
     editor.toggleClass("invisible");
-  }
-
-  _onSubstanceDisplay(event) {
-    event.preventDefault();
-    let section = event.currentTarget.closest(".substance");
-    this.actor.update({ [`system.pannels.${section.dataset.subtype}IsOpen`]: !this.actor.system.pannels[section.dataset.subtype+'IsOpen']});
   }
 }
