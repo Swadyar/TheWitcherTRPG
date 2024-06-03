@@ -24,10 +24,6 @@ export default class WitcherActor extends Actor {
 
   }
 
-  prepareData() {
-    super.prepareData();
-  }
-
   async rollItem(itemId) {
     this.sheet._onItemRoll(null, itemId)
   }
@@ -140,6 +136,7 @@ export default class WitcherActor extends Actor {
     let modifier = `+0`;
     let locationFormula;
     switch (location) {
+      case "randomSpell":
       case "randomHuman":
         let randomHumanLocation = getRandomInt(10)
         switch (randomHumanLocation) {
@@ -225,7 +222,6 @@ export default class WitcherActor extends Actor {
         }
         break;
       case "randomSpell":
-        name = location;
         alias = `${game.i18n.localize("WITCHER.Location.All")}`;
         break;
       case "Head":
