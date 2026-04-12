@@ -107,10 +107,10 @@ export let damageMixin = {
         //first subtract from temp health
         if (derivedStat == 'hp') {
             let tempHpArray = this.temporaryEffects.filter(ae =>
-                ae.changes.find(change => change.key.includes('temporaryHp'))
+                ae.system.changes.find(change => change.key.includes('temporaryHp'))
             );
             for (let tempHp of tempHpArray) {
-                for (let change of tempHp.changes) {
+                for (let change of tempHp.system.changes) {
                     let changeContent = JSON.parse(change.value);
                     if (changeContent.value < damage) {
                         damage -= changeContent.value;
@@ -121,7 +121,7 @@ export let damageMixin = {
                     }
                     change.value = JSON.stringify(changeContent);
                 }
-                await tempHp.update({ changes: tempHp.changes });
+                await tempHp.update({ changes: tempHp.system.changes });
             }
         }
 

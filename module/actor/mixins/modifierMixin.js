@@ -73,7 +73,7 @@ export let modifierMixin = {
         if (this.system.skills[skill.attribute.name][skill.name].activeEffectModifiers != 0) {
             let effects = this.appliedEffects
                 .filter(e =>
-                    e.changes.some(
+                    e.system.changes.some(
                         c => c.key === `system.skills.${skill.attribute.name}.${skill.name}.activeEffectModifiers`
                     )
                 )

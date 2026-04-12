@@ -240,17 +240,16 @@ export default class WitcherActor extends Actor {
         this.system.attackStats.kick.value = `1d6+${4 + meleeBonus}`;
     }
 
-    applyActiveEffects(preparationStage) {
-        const overrides = {};
+    applyActiveEffects(phase) {
         const changes = [];
 
-        switch (preparationStage) {
+        switch (phase) {
             case 'derived':
                 // Organize non-disabled effects by their application priority
                 for (const effect of this.allApplicableEffects()) {
                     if (!effect.active) continue;
                     changes.push(
-                        ...effect.changes
+                        ...effect.system.changes
                             .filter(change => derivedPaths.some(path => change.key.includes(path)))
                             .map(change => {
                                 const c = foundry.utils.deepClone(change);
@@ -268,7 +267,7 @@ export default class WitcherActor extends Actor {
                 for (const effect of this.allApplicableEffects()) {
                     if (!effect.active) continue;
                     changes.push(
-                        ...effect.changes.map(change => {
+                        ...effect.system.changes.map(change => {
                             const c = foundry.utils.deepClone(change);
                             c.effect = effect;
                             c.priority = c.priority ?? c.mode * 10;
@@ -282,14 +281,15 @@ export default class WitcherActor extends Actor {
         changes.sort((a, b) => a.priority - b.priority);
 
         // Apply all changes
+        let overrides = {};
+        const replacementData = this.getRollData();
         for (const change of changes) {
-            if (!change.key) continue;
-            const changes = change.effect.apply(this, change);
-            Object.assign(overrides, changes);
+            const result = ActiveEffect.applyChange(this, change, { replacementData });
+            if (foundry.utils.isPlainObject(result)) Object.assign(overrides, result);
         }
 
         // Expand the set of final overrides
-        this.overrides = foundry.utils.expandObject(overrides);
+        foundry.utils.mergeObject(this.overrides, foundry.utils.expandObject(overrides));
     }
 
     async applyStatus(effects) {

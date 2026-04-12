@@ -32,7 +32,7 @@ Hooks.once('init', function () {
     CONFIG.Item.documentClass = WitcherItem;
     CONFIG.Actor.documentClass = WitcherActor;
     CONFIG.ActiveEffect.documentClass = WitcherActiveEffect;
-    CONFIG.ActiveEffect.legacyTransferral = false;
+    CONFIG.ActiveEffect.expiryAction = 'delete';
 
     game.api = {
         applyActiveEffectToActorViaId,
@@ -57,9 +57,7 @@ Hooks.on('renderChatMessageHTML', (message, html, data) => {
     Chat.chatMessageListeners(message, html);
 });
 
-Hooks.on('renderActiveEffectConfig', async (activeEffectConfig, html, data) => {
-
-});
+Hooks.on('renderActiveEffectConfig', async (activeEffectConfig, html, data) => {});
 
 Hooks.once('ready', async function () {
     //Wait till packs are loaded for index
@@ -91,6 +89,8 @@ Hooks.once('ready', async function () {
 
     registerSocketListeners();
     deprecationWarnings();
+
+    CONFIG.ActiveEffect.phases = CONFIG.WITCHER.activeEffects.phases;
 });
 
 Hooks.once('polyglot.init', LanguageProvider => {
