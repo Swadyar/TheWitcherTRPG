@@ -3,7 +3,6 @@ const DialogV2 = foundry.applications.api.DialogV2;
 export let healMixin = {
     async _onHeal() {
         const rec = this.actor.system.derivedStats.rec;
-        const actualWoundList = this.actor.system.critWounds;
 
         let totalRec = Math.floor(rec.max / 2);
 
@@ -14,8 +13,7 @@ export let healMixin = {
             isSterilized: false,
             isHealingHand: false,
             isHealingTent: false,
-            daysHealed: 1,
-            actualWoundList: actualWoundList.length
+            daysHealed: 1
         };
 
         await new DialogV2({
@@ -44,10 +42,10 @@ export let healMixin = {
             ]
         }).render({ force: true });
 
-        this.restDialogListener(document, totalRec, rec, dialogData, actualWoundList);
+        this.restDialogListener(document, totalRec, rec, dialogData);
     },
 
-    async updateHealAmount(totalRec, rec, dialogData, actualWoundList) {
+    async updateHealAmount(totalRec, rec, dialogData) {
         const isResting = document.querySelector('#resting').checked;
         const isSterilized = document.querySelector('#sterilized').checked;
         const isHealingHand = document.querySelector('#healing-hand').checked;
@@ -63,10 +61,6 @@ export let healMixin = {
         if (isSterilized) {
             totalRec += 2;
             dialogData.isSterilized = true;
-
-            if (actualWoundList.some(wound => !wound.sterilized)) {
-                dialogData.daysHealed = +3;
-            }
         }
 
         if (isHealingHand) totalRec += 3;
@@ -91,23 +85,6 @@ export let healMixin = {
             'system.derivedStats.vigor.value': this.actor.system.derivedStats.vigor.max
         });
 
-        const clonedCritList = foundry.utils.deepClone(this.actor.system.critWounds);
-        let newCritList = [];
-
-        clonedCritList.forEach(crit => {
-            crit.daysHealed += 1;
-            if (isSterilized && !crit.sterilized) {
-                crit.daysHealed += 2;
-                crit.sterilized = true;
-            }
-            if (crit.healingTime <= 0 || crit.daysHealed < crit.healingTime) {
-                newCritList.push(crit);
-            }
-        });
-
-        await this.actor.update({ 'system.critWounds': newCritList });
-
-
         this.actor.items.documentsByType.criticalWound.forEach(crit => crit.system.heal({ sterilized: isSterilized }));
 
         ChatMessage.create({
@@ -116,7 +93,7 @@ export let healMixin = {
                 dialogData
             ),
             speaker: ChatMessage.getSpeaker({ actor: game.actors.getName(this.actor.name) }),
-            style: CONST.CHAT_MESSAGE_TYPES.IC
+            style: CONST.CHAT_MESSAGE_STYLES.IC
         });
 
         ui.notifications.info(
@@ -129,18 +106,18 @@ export let healMixin = {
         html.find('.heal-button').on('click', this._onHeal.bind(this));
     },
 
-    restDialogListener(document, totalRec, rec, dialogData, actualWoundList) {
+    restDialogListener(document, totalRec, rec, dialogData) {
         document
             .querySelector('#resting')
-            .addEventListener('change', () => this.updateHealAmount(totalRec, rec, dialogData, actualWoundList));
+            .addEventListener('change', () => this.updateHealAmount(totalRec, rec, dialogData));
         document
             .querySelector('#sterilized')
-            .addEventListener('change', () => this.updateHealAmount(totalRec, rec, dialogData, actualWoundList));
+            .addEventListener('change', () => this.updateHealAmount(totalRec, rec, dialogData));
         document
             .querySelector('#healing-hand')
-            .addEventListener('change', () => this.updateHealAmount(totalRec, rec, dialogData, actualWoundList));
+            .addEventListener('change', () => this.updateHealAmount(totalRec, rec, dialogData));
         document
             .querySelector('#healing-tent')
-            .addEventListener('change', () => this.updateHealAmount(totalRec, rec, dialogData, actualWoundList));
+            .addEventListener('change', () => this.updateHealAmount(totalRec, rec, dialogData));
     }
 };
