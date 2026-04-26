@@ -8,7 +8,8 @@
                 <div class="list-details armor-details">
                     <a class="item-display-info display-details">
                         <img class="item-image item-list-image" src="{{armor.img}}">
-                        <span class="item-image item-list-image" data-tooltip="{{localize 'WITCHER.Item.openDescription'}}">
+                        <span class="item-image item-list-image"
+                            data-tooltip="{{localize 'WITCHER.Item.openDescription'}}">
                             <i class="fa-solid fa-book"></i>
                         </span>
                     </a>
@@ -35,7 +36,7 @@
                             {{/if}}">
                                 <i class="{{#if armor.system.equipped}}fa-solid{{else}}fa-regular{{/if}} fa-shield"></i>
                             </a>
-                            {{#if armor.canBeRepaired}}
+                            {{#if armor.system.canBeRepaired}}
                                 <a class="item-repair" data-tooltip="{{localize 'WITCHER.Repair.buttons.repair'}}"><i
                                         class="fas fa-screwdriver-wrench"></i></a>
                             {{/if}}
@@ -50,19 +51,19 @@
                                 {{armor.system.type}}
                             </span>
                         {{/if}}
-                        {{#if armor.system.slashing}}
+                        {{#if armor.system.resistance.slashing}}
                             <span class="item-tag" data-tooltip="{{localize "WITCHER.DamageType.slashing"}}">
                                 <i class="fa-solid fa-maximize"></i>
                                 {{localize "WITCHER.DamageType.slashing"}}
                             </span>
                         {{/if}}
-                        {{#if armor.system.piercing}}
+                        {{#if armor.system.resistance.piercing}}
                             <span class="item-tag" data-tooltip="{{localize "WITCHER.DamageType.piercing"}}">
                                 <i class="fa-solid fa-maximize"></i>
                                 {{localize "WITCHER.DamageType.piercing"}}
                             </span>
                         {{/if}}
-                        {{#if armor.system.bludgeoning}}
+                        {{#if armor.system.resistance.bludgeoning}}
                             <span class="item-tag" data-tooltip="{{localize "WITCHER.DamageType.bludgeoning"}}">
                                 <i class="fa-solid fa-maximize"></i>
                                 {{localize "WITCHER.DamageType.bludgeoning"}}
@@ -86,47 +87,48 @@
                         </div>
                     {{/if}}
                     {{#unless (eq type "enhancement")}}
-                        {{#if armor.system.enhancementItems.length}}
+                        {{#if (or armor.system.enhancementItems.length armor.system.freeEnhancements.length)}}
                             <div class="weapon-enhancements">
                                 <h3>{{localize "WITCHER.Dialog.Enhancement"}}</h3>
                                 <div class="enhancement-list">
                                     {{#each armor.system.enhancementItems as |enhancement id|}}
-                                        {{#if enhancement.img}}
-                                            <div class="item weapon-enhancement" data-item-id="{{enhancement.id}}">
-                                                <div class="enhancement-label">
-                                                    <img class="enhancement-img no-margin"
-                                                        src="{{enhancement.img}}" />
-                                                    <span class="">{{enhancement.name}}</span>
+                                        <div class="item weapon-enhancement" data-item-id="{{enhancement.id}}">
+                                            <div class="enhancement-label">
+                                                <img class="enhancement-img no-margin" src="{{enhancement.img}}" />
+                                                <span class="">{{enhancement.name}}</span>
+                                            </div>
+                                            <div class="enhancement-info invisible">
+                                                <div class="item-tags">
+                                                    {{#each enhancement.system.effects as |effects|}}
+                                                        {{#if (gt effects.percentage 0)}}
+                                                            <div class="item-tag">
+                                                                {{effects.statusEffect}}
+                                                                {{effects.percentage}}%
+                                                            </div>
+                                                        {{/if}}
+                                                    {{/each}}
                                                 </div>
-                                                <div class="enhancement-info invisible">
-                                                    <div class="item-tags">
-                                                        {{#each enhancement.system.effects as |effects|}}
-                                                            {{#if (gt effects.percentage 0)}}
-                                                                <div class="item-tag">
-                                                                    {{effects.statusEffect}}
-                                                                    {{effects.percentage}}%
-                                                                </div>
-                                                            {{/if}}
-                                                        {{/each}}
-                                                    </div>
-                                                    <div class="enhancement-effects-name">
-                                                        {{#each enhancement.system.effects as |effects|}}
-                                                            {{effects.name}}
-                                                        {{/each}}
-                                                    </div>
+                                                <div class="enhancement-effects-name">
+                                                    {{#each enhancement.system.effects as |effects|}}
+                                                        {{effects.name}}
+                                                    {{/each}}
                                                 </div>
                                             </div>
-                                        {{else}}
-                                            <a class="enhancement-label enhancement-weapon-slot">
-                                                <div class="enhancement-slot">
-                                                </div>
-                                                <span>{{localize 'WITCHER.Item.equipEnhancement'}}</span>
-                                            </a>
-                                        {{/if}}
+                                        </div>
+                                    {{/each}}
+                                    {{log armor.system.freeEnhancements}}
+                                    {{#each armor.system.freeEnhancements}}
+                                        {{log this}}
+                                        <a class="enhancement-label enhancement-weapon-slot">
+                                            <div class="enhancement-slot">
+                                            </div>
+                                            <span>{{localize 'WITCHER.Item.equipEnhancement'}}</span>
+                                        </a>
                                     {{/each}}
                                 </div>
                             </div>
                         {{/if}}
+
                     {{/unless}}
                 </div>
             </li>

@@ -210,23 +210,6 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
                 (item.type == 'enhancement' && item.system.type == 'armor' && item.system.applied == false)
             );
         });
-
-        context.armors.forEach(armor => {
-            if (armor.system.enhancements > 0 && armor.system.enhancements != armor.system.enhancementItemIds.length) {
-                let newEnhancementList = [];
-                let enhancementItems = armor.system.enhancementItems ?? [];
-                for (let i = 0; i < armor.system.enhancements; i++) {
-                    let element = enhancementItems[i];
-                    if (element && JSON.stringify(element) != '{}') {
-                        newEnhancementList.push(element);
-                    } else {
-                        newEnhancementList.push({});
-                    }
-                }
-                let item = context.actor.items.get(armor._id);
-                item.system.enhancementItems = newEnhancementList;
-            }
-        });
     }
 
     async _prepareCritWounds(context) {

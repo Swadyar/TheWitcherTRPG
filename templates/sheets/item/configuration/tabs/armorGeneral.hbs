@@ -1,20 +1,20 @@
 <div class="tab {{tabs.general.cssClass}} scrollable standard-form" data-group="primary" data-tab="general">
-    {{log this}}
-    {{formGroup systemFields.headStopping value=document.system.headStopping localize=true}}
-    {{formGroup systemFields.headMaxStopping value=document.system.headMaxStopping localize=true}}
 
-    {{formGroup systemFields.torsoStopping value=document.system.torsoStopping localize=true}}
-    {{formGroup systemFields.torsoMaxStopping value=document.system.torsoMaxStopping localize=true}}
+    {{formGroup systemFields.head.fields.stoppingPower value=document.system.head.stoppingPower localize=true hint='WITCHER.Armor.LocationHead'}}
+    {{formGroup systemFields.head.fields.maxStoppingPower value=document.system.head.maxStoppingPower localize=true hint='WITCHER.Armor.LocationHead'}}
 
-    {{formGroup systemFields.leftArmStopping value=document.system.leftArmStopping localize=true}}
-    {{formGroup systemFields.leftArmMaxStopping value=document.system.leftArmMaxStopping localize=true}}
+    {{formGroup systemFields.torso.fields.stoppingPower value=document.system.torso.stoppingPower localize=true hint='WITCHER.Armor.LocationTorso'}}
+    {{formGroup systemFields.torso.fields.maxStoppingPower value=document.system.torso.maxStoppingPower localize=true hint='WITCHER.Armor.LocationTorso'}}
 
-    {{formGroup systemFields.rightArmStopping value=document.system.rightArmStopping localize=true}}
-    {{formGroup systemFields.rightArmMaxStopping value=document.system.rightArmMaxStopping localize=true}}
+    {{formGroup systemFields.leftArm.fields.stoppingPower value=document.system.leftArm.stoppingPower localize=true hint='WITCHER.Armor.locationLeftArm'}}
+    {{formGroup systemFields.leftArm.fields.maxStoppingPower value=document.system.leftArm.maxStoppingPower localize=true hint='WITCHER.Armor.locationLeftArm'}}
 
-    {{formGroup systemFields.leftLegStopping value=document.system.leftLegStopping localize=true}}
-    {{formGroup systemFields.leftLegMaxStopping value=document.system.leftLegMaxStopping localize=true}}
+    {{formGroup systemFields.rightArm.fields.stoppingPower value=document.system.rightArm.stoppingPower localize=true hint='WITCHER.Armor.locationRightArm'}}
+    {{formGroup systemFields.rightArm.fields.maxStoppingPower value=document.system.rightArm.maxStoppingPower localize=true hint='WITCHER.Armor.locationRightArm'}}
 
-    {{formGroup systemFields.rightLegStopping value=document.system.rightLegStopping localize=true}}
-    {{formGroup systemFields.rightLegMaxStopping value=document.system.rightLegMaxStopping localize=true}}
+    {{formGroup systemFields.leftLeg.fields.stoppingPower value=document.system.leftLeg.stoppingPower localize=true hint='WITCHER.Armor.locationLeftLeg'}}
+    {{formGroup systemFields.leftLeg.fields.maxStoppingPower value=document.system.leftLeg.maxStoppingPower localize=true hint='WITCHER.Armor.locationLeftLeg'}}
+
+    {{formGroup systemFields.rightLeg.fields.stoppingPower value=document.system.rightLeg.stoppingPower localize=true hint='WITCHER.Armor.locationRightLeg'}}
+    {{formGroup systemFields.rightLeg.fields.maxStoppingPower value=document.system.rightLeg.maxStoppingPower localize=true hint='WITCHER.Armor.locationRightLeg'}}
 </div>

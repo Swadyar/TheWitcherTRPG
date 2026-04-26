@@ -33,7 +33,7 @@
                             {{/if}}">
                                 <i class="{{#if weapon.system.equipped}}fa-solid{{else}}fa-regular{{/if}} fa-hand"></i>
                             </a>
-                            {{#if weapon.canBeRepaired}}
+                            {{#if weapon.system.canBeRepaired}}
                                 <a class="item-repair" data-tooltip="{{localize 'WITCHER.Repair.buttons.repair'}}"><i
                                         class="fas fa-screwdriver-wrench"></i></a>
                             {{/if}}
