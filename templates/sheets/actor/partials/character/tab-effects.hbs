@@ -14,14 +14,18 @@
                             <div class="critwound-header">
                                 <div class="critwound-info">
                                     <div>
-                                        <span>{{critWound.name}}</span>
+                                        <details>
+                                            <summary><span>{{critWound.name}}</span></summary>
+                                            <span>{{{lookup (lookup ../criticalWounds critWound.uuid) 'enriched'}}}</span>
+                                        </details>
                                     </div>
                                     <div>
                                         <span><u>{{localize "WITCHER.criticalWound.criticalLevel.label"}}:</u>
                                             {{localize (lookup ../config.critLevel critWound.system.criticalLevel)}} |
                                         </span>
                                         <span><u>{{localize "WITCHER.criticalWound.treatment.label" }}:</u>
-                                            {{localize (lookup ../config.critTreatment critWound.system.treatment)}} | </span>
+                                            {{localize (lookup ../config.critTreatment critWound.system.treatment)}} |
+                                        </span>
                                         <span><u>{{localize "WITCHER.criticalWound.location.label"}}:</u>
                                             {{localize (lookup ../config.location critWound.system.location)}}</span>
                                     </div>
