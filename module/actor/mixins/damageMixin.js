@@ -325,8 +325,6 @@ export let damageMixin = {
         wound = await fromUuid(wound.uuid);
         this.addItem(wound);
 
-        console.log(this);
-
         const chatData = {
             content: `<div>${wound.name}</div><div>${wound.system.description}</div>`,
             speaker: ChatMessage.getSpeaker({ actor: this }),
