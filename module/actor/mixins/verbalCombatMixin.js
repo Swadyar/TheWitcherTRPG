@@ -47,8 +47,7 @@ export let verbalCombatMixin = {
                         let rollFormula = `1d10`;
 
                         if (verbalCombat.skill) {
-                            rollFormula += game.settings.get('TheWitcherTRPG', 'woundsAffectSkillBase') ? ' +(' : ' +';
-                            rollFormula += !displayRollDetails
+                            rollFormula += ' +' + !displayRollDetails
                                 ? `${vcStat} +${vcSkill}`
                                 : `${vcStat}[${game.i18n.localize(vcStatName)}] +${vcSkill}[${game.i18n.localize(vcSkillName)}]`;
                             rollFormula += this.addAllModifiers(verbalCombat.skill.name);

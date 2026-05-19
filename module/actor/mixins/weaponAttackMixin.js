@@ -177,9 +177,6 @@ export let weaponAttackMixin = {
         for (let i = 0; i < attacknumber; i++) {
             let attFormula = '1d10+';
             let skill = CONFIG.WITCHER.skillMap[attack.skill];
-            if (game.settings.get('TheWitcherTRPG', 'woundsAffectSkillBase')) {
-                attFormula += '(';
-            }
             if (options.skillReplacement) {
                 attFormula += !displayRollDetails
                     ? `${this.system.stats[options.skillReplacement.stat].value}+${options.skillReplacement.level ?? 0}`

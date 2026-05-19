@@ -47,7 +47,6 @@ export default class WitcherActorSheetV1 extends foundry.appv1.sheets.ActorSheet
         this._prepareArmor(context);
         this._prepareSpells(context);
         this._prepareItems(context);
-        this._prepareCritWounds(context);
 
         // Prepare active effects for easier access
         let temporaryItemImprovements = context.items
@@ -192,15 +191,6 @@ export default class WitcherActorSheetV1 extends foundry.appv1.sheets.ActorSheet
                 let item = context.actor.items.get(armor._id);
                 item.system.enhancementItems = newEnhancementList;
             }
-        });
-    }
-
-    _prepareCritWounds(context) {
-        let wounds = context.system.critWounds;
-
-        wounds.forEach((wound, index) => {
-            wounds[index].description = CONFIG.WITCHER.Crit[wound.configEntry]?.description;
-            wounds[index].effect = CONFIG.WITCHER.Crit[wound.configEntry]?.effect[wound.mod];
         });
     }
 

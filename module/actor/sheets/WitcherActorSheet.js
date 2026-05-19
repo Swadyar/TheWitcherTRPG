@@ -82,7 +82,6 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
         await this._prepareArmor(context);
         await this._prepareSpells(context);
         await this._prepareItems(context);
-        await this._prepareCritWounds(context);
 
         // Prepare active effects for easier access
         let temporaryItemImprovements = context.items
@@ -209,15 +208,6 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
                 item.type == 'armor' ||
                 (item.type == 'enhancement' && item.system.type == 'armor' && item.system.applied == false)
             );
-        });
-    }
-
-    async _prepareCritWounds(context) {
-        let wounds = context.system.critWounds;
-
-        wounds.forEach((wound, index) => {
-            wounds[index].description = CONFIG.WITCHER.Crit[wound.configEntry]?.description;
-            wounds[index].effect = CONFIG.WITCHER.Crit[wound.configEntry]?.effect[wound.mod];
         });
     }
 

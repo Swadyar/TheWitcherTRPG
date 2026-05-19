@@ -30,7 +30,6 @@ export default class CommonActorData extends foundry.abstract.TypeDataModel {
                 })
             }),
             deathSaves: new fields.NumberField({ initial: 0 }),
-            critWounds: new fields.ArrayField(new fields.SchemaField(critWound())),
 
             stats: new fields.EmbeddedDataField(Stats),
             derivedStats: new fields.EmbeddedDataField(DerivedStats),

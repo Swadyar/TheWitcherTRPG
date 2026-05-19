@@ -20,9 +20,6 @@ export let castSpellMixin = {
         };
 
         let rollFormula = '1d10+';
-        if (game.settings.get('TheWitcherTRPG', 'woundsAffectSkillBase')) {
-            rollFormula += '(';
-        }
         rollFormula += !displayRollDetails
             ? `${this.system.stats.will.value}`
             : `${this.system.stats.will.value}[${game.i18n.localize(CONFIG.WITCHER.statMap.will.label)}]`;

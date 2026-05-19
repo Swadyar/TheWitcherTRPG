@@ -57,9 +57,6 @@ export let skillMixin = {
         let messageData = new ChatMessageData(this, `${attributeLabel}: ${skillLabel} Check`);
 
         let rollFormula = '1d10 +';
-        if (game.settings.get('TheWitcherTRPG', 'woundsAffectSkillBase')) {
-            rollFormula += '(';
-        }
         if (!this.system.dontAddAttr) {
             rollFormula += !displayRollDetails ? `${attributeValue} +` : `${attributeValue}[${attributeLabel}] +`;
         }

@@ -32,14 +32,6 @@ export const registerSettings = function () {
     });
 
     //rules interpretation
-    game.settings.register('TheWitcherTRPG', 'woundsAffectSkillBase', {
-        name: 'WITCHER.Settings.WoundsAffectSkillBase',
-        hint: 'WITCHER.Settings.WoundsAffectSkillBaseDetails',
-        scope: 'world',
-        config: true,
-        type: Boolean,
-        default: false
-    });
 
     //sage rulings
     game.settings.register('TheWitcherTRPG', 'silverTrait', {
