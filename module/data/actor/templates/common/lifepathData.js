@@ -2,8 +2,6 @@ const fields = foundry.data.fields;
 
 export default function lifepathData() {
     return {
-        strongStrikeAttackBonus: new fields.NumberField({ initial: 0 }),
-        jointStrikeAttackBonus: new fields.NumberField({ initial: 0 }),
         shieldParryBonus: new fields.NumberField({ initial: 0 }),
         shieldParryThrownBonus: new fields.NumberField({ initial: 0 }),
         ignoredArmorEncumbrance: new fields.NumberField({ initial: 0 }),

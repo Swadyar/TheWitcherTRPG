@@ -373,37 +373,8 @@ export let weaponAttackMixin = {
         }
 
         if (this.system.lifepathModifiers.attacks[strike]) {
-            formula += this.system.lifepathModifiers.attacks[strike] > 0 ? ' +' : ' ';
-            formula += `${this.system.lifepathModifiers.attacks[strike]}`;
+            formula += `+${this.system.lifepathModifiers.attacks[strike]}`;
             formula += displayRollDetails ? `[${game.i18n.localize('WITCHER.Actor.Lifepath.Bonus')}]` : '';
-        }
-
-        if (strike == 'joint') {
-            formula += !displayRollDetails
-                ? `${
-                      this.system.lifepathModifiers.jointStrikeAttackBonus > 0
-                          ? ` +${this.system.lifepathModifiers.jointStrikeAttackBonus}`
-                          : ''
-                  }`
-                : `${
-                      this.system.lifepathModifiers.jointStrikeAttackBonus > 0
-                          ? ` +${this.system.lifepathModifiers.jointStrikeAttackBonus}[${game.i18n.localize('WITCHER.Actor.Lifepath.Bonus')}]`
-                          : ''
-                  }`;
-        }
-
-        if (strike == 'strong') {
-            formula += !displayRollDetails
-                ? `${
-                      this.system.lifepathModifiers.strongStrikeAttackBonus > 0
-                          ? ` +${this.system.lifepathModifiers.strongStrikeAttackBonus}`
-                          : ''
-                  }`
-                : `${
-                      this.system.lifepathModifiers.strongStrikeAttackBonus > 0
-                          ? ` +${this.system.lifepathModifiers.strongStrikeAttackBonus}[${game.i18n.localize('WITCHER.Actor.Lifepath.Bonus')}]`
-                          : ''
-                  }`;
         }
 
         return formula;
