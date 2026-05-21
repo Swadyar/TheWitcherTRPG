@@ -17,13 +17,11 @@ export default class Craft extends foundry.abstract.DataModel {
 
     /** @inheritdoc */
     static migrateData(source) {
-        source.alchemy.label = 'WITCHER.skills.alchemy.label';
-        source.crafting.label = 'WITCHER.skills.crafting.label';
-        source.disguise.label = 'WITCHER.skills.disguise.label';
-        source.firstaid.label = 'WITCHER.skills.firstAid.label';
-        source.forgery.label = 'WITCHER.skills.forgery.label';
-        source.picklock.label = 'WITCHER.skills.pickLock.label';
-        source.trapcraft.label = 'WITCHER.skills.trapCrafting.label';
+        Object.keys(this.defineSchema()).forEach(skillName => {
+            if (source[skillName]) {
+                source[skillName].label = `WITCHER.skills.${skillName}.label`;
+            }
+        });
 
         return super.migrateData(source);
     }

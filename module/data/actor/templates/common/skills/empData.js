@@ -20,16 +20,15 @@ export default class Empathy extends foundry.abstract.DataModel {
 
     /** @inheritdoc */
     static migrateData(source) {
-        source.charisma.label = 'WITCHER.skills.charisma.label';
-        source.deceit.label = 'WITCHER.skills.deceit.label';
-        source.finearts.label = 'WITCHER.skills.fineArts.label';
-        source.gambling.label = 'WITCHER.skills.gambling.label';
-        source.grooming.label = 'WITCHER.skills.groomingAndStyle.label';
-        source.perception.label = 'WITCHER.skills.humanPerception.label';
-        source.leadership.label = 'WITCHER.skills.leadership.label';
-        source.persuasion.label = 'WITCHER.skills.persuasion.label';
-        source.performance.label = 'WITCHER.skills.performance.label';
-        source.seduction.label = 'WITCHER.skills.seduction.label';
+        Object.keys(this.defineSchema()).forEach(skillName => {
+            if (source[skillName]) {
+                source[skillName].label = `WITCHER.skills.${skillName}.label`;
+            }
+        });
+
+        if (source.finearts) source.finearts.label = 'WITCHER.skills.fineArts.label';
+        if (source.grooming) source.grooming.label = 'WITCHER.skills.groomingAndStyle.label';
+        if (source.perception) source.perception.label = 'WITCHER.skills.humanPerception.label';
 
         return super.migrateData(source);
     }
