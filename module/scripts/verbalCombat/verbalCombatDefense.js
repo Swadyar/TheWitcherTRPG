@@ -76,7 +76,7 @@ async function executeDefenseCallback(actor, totalAttack, html) {
         rollFormula += !displayRollDetails
             ? ` +${vcStat} +${vcSkill}`
             : ` +${vcStat}[${game.i18n.localize(vcStatName)}] +${vcSkill}[${game.i18n.localize(vcSkillName)}]`;
-        rollFormula += actor.addAllModifiers(verbalCombat.skill.name);
+        rollFormula += actor.addActiveEffects(verbalCombat.skill.name);
     }
 
     let customAtt = html.find('[name=customModifiers]')[0].value;

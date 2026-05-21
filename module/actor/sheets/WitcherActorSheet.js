@@ -1,7 +1,6 @@
 import { deathsaveMixin } from './mixins/deathSaveMixin.js';
 import { criticalWoundMixin } from './mixins/criticalWoundMixin.js';
 import { noteMixin } from './mixins/noteMixin.js';
-import { skillModifierMixin } from './mixins/skillModifierMixin.js';
 import { skillMixin } from './mixins/skillMixin.js';
 import { statMixin } from './mixins/statMixin.js';
 import { itemMixin } from './mixins/itemMixin.js';
@@ -233,7 +232,6 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
         //mixins
         this.statListener(html);
         this.skillListener(html);
-        this.skillModifierListener(html);
         this.customSkillListener(html);
 
         this.itemListener(html);
@@ -311,7 +309,6 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
 
 Object.assign(WitcherActorSheet.prototype, statMixin);
 Object.assign(WitcherActorSheet.prototype, skillMixin);
-Object.assign(WitcherActorSheet.prototype, skillModifierMixin);
 Object.assign(WitcherActorSheet.prototype, customSkillMixin);
 
 Object.assign(WitcherActorSheet.prototype, itemMixin);

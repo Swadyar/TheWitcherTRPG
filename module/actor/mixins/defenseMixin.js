@@ -177,7 +177,7 @@ export let defenseMixin = {
             defenseAction.value,
             this.items.get(defenseItemId)?.type
         );
-        rollFormula += this.addAllModifiers(skillName);
+        rollFormula += this.addActiveEffects(skillName);
         rollFormula += this.addDefenseModifiers();
 
         if (skillName != 'resistmagic' && this.statuses.find(status => status == 'stun')) {

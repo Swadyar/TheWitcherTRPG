@@ -321,7 +321,7 @@ export default class WitcherCharacterSheet extends WitcherActorSheet {
                                 : `+2[${game.i18n.localize('WITCHER.Dialog.Diagram')}]`;
                         }
 
-                        rollFormula += this.actor.addAllModifiers('alchemy');
+                        rollFormula += this.actor.addActiveEffects('alchemy');
 
                         let config = new RollConfig();
                         config.showCrit = true;
@@ -409,7 +409,7 @@ export default class WitcherCharacterSheet extends WitcherActorSheet {
                                 : `+2[${game.i18n.localize('WITCHER.Dialog.Diagram')}]`;
                         }
 
-                        rollFormula += this.actor.addAllModifiers('crafting');
+                        rollFormula += this.actor.addActiveEffects('crafting');
 
                         let config = new RollConfig();
                         config.showCrit = true;

@@ -157,33 +157,5 @@
                 </div>
             </div>
         {{/if}}
-        <div class='char-resource-modifier'>
-            <details>
-                <summary>
-                    <span>{{localize 'WITCHER.Resources.modifiers'}}</span>
-                </summary>
-                <div class='resource-modifiers'>
-                    {{#each system.derivedStats as |details derivedStats|}}
-                        {{#unless (eq derivedStats 'vigor')}}
-                            {{#if details.modifiers}}
-                                <div class='stat-display' data-type='derivedStat' data-stat='{{derivedStats}}'>
-                                    <div class='flex'><label>{{localize details.label}} </label></div>
-                                    {{#each details.modifiers as |modifier value|}}
-                                        <div class='list-modifiers' data-id='{{modifier.id}}'>
-                                            <input class='medium list-mod-edit' data-field='name' type='text'
-                                                value='{{modifier.name}}' />
-                                            <input class='small list-mod-edit' data-field='value' type='number'
-                                                value='{{modifier.value}}' />
-                                            <a class='delete-stat'><i class='fas fa-trash-alt'
-                                                    data-id='{{modifier.id}}'></i></a>
-                                        </div>
-                                    {{/each}}
-                                </div>
-                            {{/if}}
-                        {{/unless}}
-                    {{/each}}
-                </div>
-            </details>
-        </div>
     </div>
 </div>

@@ -29,7 +29,7 @@ export let castSpellMixin = {
         rollFormula +=
             `+${this.system.skills.will[usedSkill.name].value}` +
             (displayRollDetails ? `[${game.i18n.localize(usedSkill.label)}]` : '');
-        rollFormula += this.addAllModifiers(usedSkill.name);
+        rollFormula += this.addActiveEffects(usedSkill.name);
         rollFormula += this.addAttackModifiers();
 
         let armorEnc = this.getArmorEcumbrance();

@@ -17,27 +17,7 @@
                                 value="{{details.value}}" placeholder="0" data-dtype="Number" disabled readonly />
                             <input class="header-stat stat-max" name="system.stats.{{stat}}.unmodifiedMax" type="number"
                                 value="{{details.unmodifiedMax}}" placeholder="0" data-dtype="Number" />
-
-                            {{#if details.isOpened}}
-                                <a class="stat-modifier-display"><i class="fas fa-chevron-down"></i></a>
-                            {{else}}
-                                <a class="stat-modifier-display"><i class="fas fa-chevron-right"></i></a>
-                            {{/if}}
                         </div>
-                        {{#if details.isOpened}}
-                            <a class="add-modifier"><i class="fas fa-plus"></i></a>
-                            {{#each details.modifiers as |modifier value|}}
-                                <div class="list-modifiers" data-id="{{modifier.id}}">
-                                    <input class="medium list-mod-edit" data-field="name" type="text"
-                                        value="{{modifier.name}}" />
-                                    <input class="small list-mod-edit" data-field="value" type="number"
-                                        value="{{modifier.value}}" />
-                                    <a class="delete-stat">
-                                        <i class="fas fa-trash-alt" data-id="{{modifier.id}}"></i>
-                                    </a>
-                                </div>
-                            {{/each}}
-                        {{/if}}
                     </div>
                 </div>
             {{/unless}}

@@ -1,4 +1,3 @@
-import critWound from './templates/common/critWoundData.js';
 import currency from './templates/common/currencyData.js';
 import adrenaline from './templates/common/adrenalineData.js';
 import skills from './templates/common/skills/skillsData.js';

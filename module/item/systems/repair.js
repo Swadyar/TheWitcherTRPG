@@ -218,7 +218,7 @@ class Repair {
         rollFormula += displayRollDetails
             ? `1d10+${stat}[${statName}]+${skill}[${data.skillName}]`
             : `1d10 + ${stat} + ${skill}`;
-        rollFormula += data.executor.addAllModifiers('crafting');
+        rollFormula += data.executor.addActiveEffects('crafting');
 
         return rollFormula;
     }

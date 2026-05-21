@@ -50,7 +50,7 @@ export let verbalCombatMixin = {
                             rollFormula += ' +' + !displayRollDetails
                                 ? `${vcStat} +${vcSkill}`
                                 : `${vcStat}[${game.i18n.localize(vcStatName)}] +${vcSkill}[${game.i18n.localize(vcSkillName)}]`;
-                            rollFormula += this.addAllModifiers(verbalCombat.skill.name);
+                            rollFormula += this.addActiveEffects(verbalCombat.skill.name);
                         }
 
                         let customAtt = html.find('[name=customModifiers]')[0].value;
