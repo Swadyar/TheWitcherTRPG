@@ -66,19 +66,31 @@ export default class DamageProperties extends foundry.abstract.DataModel {
         this.effects = { ...this.effects, ...effects };
     }
 
+    get enhancementsEffects() {
+        let effects = {};
+
+        this.parent.enhancementItems
+            ?.filter(item => Object.keys(item).length !== 0)
+            .forEach(enhancement => (effects = { ...effects, ...enhancement.system?.effects }));
+
+        return effects;
+    }
+
     getPreprocessedEffects() {
         let effectsArray = [];
         Object.keys(this.effects).forEach(key => {
             let effect = this.effects[key];
             let existingStatus = effectsArray.find(
-                effect => effect.statusEffect && effect.statusEffect == effect.statusEffect
+                existingEffect => effect.statusEffect && effect.statusEffect == existingEffect.statusEffect
             );
 
             if (existingStatus) {
-                existingStatus.name += ', ' + effect.name;
+                if (existingStatus.name !== effect.name) {
+                    existingStatus.name += ', ' + effect.name;
+                }
                 existingStatus.percentage += effect.percentage;
             } else {
-                effectsArray.push(effect);
+                effectsArray.push({ ...effect });
             }
         });
 

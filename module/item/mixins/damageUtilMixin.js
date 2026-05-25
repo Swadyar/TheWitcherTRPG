@@ -7,14 +7,14 @@ const DialogV2 = foundry.applications.api.DialogV2;
 export let damageUtilMixin = {
     createBaseDamageObject() {
         return {
-            properties: foundry.utils.deepClone(this.system.damageProperties),
+            properties: this.system.damageProperties,
             item: this,
             itemUuid: this.uuid,
             crit: {
                 critLocationModifier: this.parent.system.attackStats.critLocationModifier,
                 critEffectModifier: this.parent.system.attackStats.critEffectModifier
             },
-            defenseOptions: foundry.utils.deepClone(this.system.defenseOptions)
+            defenseOptions: this.system.defenseOptions
         };
     },
 

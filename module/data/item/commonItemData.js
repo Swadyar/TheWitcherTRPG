@@ -22,4 +22,8 @@ export default class CommonItemData extends foundry.abstract.TypeDataModel {
     get canHaveTemporaryItemImprovement() {
         return false;
     }
+
+    get canBeRepaired() {
+        return false;
+    }
 }

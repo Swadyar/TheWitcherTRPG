@@ -1,6 +1,8 @@
 import { WITCHER } from '../../../setup/config.js';
 import WitcherItem from '../../../item/witcherItem.js';
 
+const DialogV2 = foundry.applications.api.DialogV2;
+
 export let itemMixin = {
     async _onDropItem(event, item) {
         if (!this.actor.isOwner) return false;
@@ -204,79 +206,34 @@ export let itemMixin = {
             content += `<div><label>${game.i18n.localize('WITCHER.Dialog.Enhancement')}: <select name="enhancement">${enhancementsOption}</select></label></div>`;
         }
 
-        new Dialog({
+        DialogV2.prompt({
             title: `${game.i18n.localize('WITCHER.Enhancement.ChooseTitle')}`,
-            content,
-            buttons: {
-                Cancel: {
-                    label: `${game.i18n.localize('WITCHER.Button.Cancel')}`,
-                    callback: () => {}
-                },
-                Apply: {
-                    label: `${game.i18n.localize('WITCHER.Dialog.Apply')}`,
-                    callback: async html => {
-                        let enhancementId = undefined;
-                        if (html.find('[name=enhancement]')[0]) {
-                            enhancementId = html.find('[name=enhancement]')[0].value;
-                        }
-                        if (enhancementId) {
-                            let newEnhancementList = item.system.enhancementItemIds;
-                            newEnhancementList.push(enhancementId);
-                            await item.update({ 'system.enhancementItemIds': newEnhancementList });
+            content: content,
+            modal: true,
+            ok: {
+                callback: (event, button, dialog) => {
+                    let enhancementId = button.form.elements.enhancement.value;
 
-                            let choosenEnhancement = this.actor.items.get(enhancementId);
-                            if (
-                                choosenEnhancement.system.type == 'armor' ||
-                                choosenEnhancement.system.type == 'glyph'
-                            ) {
-                                await item.update({
-                                    'system.headStopping':
-                                        item.system.headStopping + choosenEnhancement.system.stopping,
-                                    'system.headMaxStopping':
-                                        item.system.headMaxStopping + choosenEnhancement.system.stopping,
-                                    'system.torsoStopping':
-                                        item.system.torsoStopping + choosenEnhancement.system.stopping,
-                                    'system.torsoMaxStopping':
-                                        item.system.torsoMaxStopping + choosenEnhancement.system.stopping,
-                                    'system.leftArmStopping':
-                                        item.system.leftArmStopping + choosenEnhancement.system.stopping,
-                                    'system.leftArmMaxStopping':
-                                        item.system.leftArmMaxStopping + choosenEnhancement.system.stopping,
-                                    'system.rightArmStopping':
-                                        item.system.rightArmStopping + choosenEnhancement.system.stopping,
-                                    'system.rightArmMaxStopping':
-                                        item.system.rightArmMaxStopping + choosenEnhancement.system.stopping,
-                                    'system.leftLegStopping':
-                                        item.system.leftLegStopping + choosenEnhancement.system.stopping,
-                                    'system.leftLegMaxStopping':
-                                        item.system.leftLegMaxStopping + choosenEnhancement.system.stopping,
-                                    'system.rightLegStopping':
-                                        item.system.rightLegStopping + choosenEnhancement.system.stopping,
-                                    'system.rightLegMaxStopping':
-                                        item.system.rightLegMaxStopping + choosenEnhancement.system.stopping,
-                                    'system.bludgeoning': choosenEnhancement.system.bludgeoning,
-                                    'system.slashing': choosenEnhancement.system.slashing,
-                                    'system.piercing': choosenEnhancement.system.piercing,
-                                    'system.effects': item.system.addEffects(choosenEnhancement.system.effects)
-                                });
-                            }
+                    let newEnhancementList = item.system.enhancementItemIds;
+                    newEnhancementList.push(enhancementId);
+                    item.update({ 'system.enhancementItemIds': newEnhancementList });
 
-                            let newName = choosenEnhancement.name + '(Applied)';
-                            let newQuantity = choosenEnhancement.system.quantity;
-                            await choosenEnhancement.update({
-                                'name': newName,
-                                'system.applied': true,
-                                'system.quantity': 1
-                            });
-                            if (newQuantity > 1) {
-                                newQuantity -= 1;
-                                await this.actor.addItem(choosenEnhancement, newQuantity, true);
-                            }
-                        }
+                    let choosenEnhancement = this.actor.items.get(enhancementId);
+
+                    let newName = choosenEnhancement.name + '(Applied)';
+                    let newQuantity = choosenEnhancement.system.quantity;
+                    choosenEnhancement.update({
+                        'name': newName,
+                        'system.applied': true,
+                        'system.quantity': 1
+                    });
+                    if (newQuantity > 1) {
+                        newQuantity -= 1;
+                        this.actor.addItem(choosenEnhancement, newQuantity, true);
                     }
                 }
             }
-        }).render(true);
+        });
     },
 
     _onItemDisplayInfo(event) {

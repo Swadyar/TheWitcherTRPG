@@ -60,5 +60,34 @@
                 </tr>
             {{/if}}
         {{/each}}
+        {{#each item.system.damageProperties.enhancementsEffects as |effect id|}}
+            <tr class="list-item" data-id="{{id}}" data-target='system.damageProperties.effects'>
+                <td>
+                    
+                </td>
+                <td>
+                    <input class="item-effect" data-field="name" type="text"
+                        value="{{effect.name}}" disabled />
+                </td>
+                <td>
+                    <select class="item-effect" data-field="statusEffect" disabled>
+                        {{selectOptions ../config.statusEffects blank='' selected=effect.statusEffect nameAttr='id' valueAttr="id" labelAttr="name" localize=true}}
+                    </select>
+                </td>
+                <td>
+                    <input placeholder="%" data-field="percentage" type="text"
+                        value="{{effect.percentage}}" data-dtype="Number" disabled />
+                </td>
+            </tr>
+            {{#if ../item.system.staminaIsVar }}
+                <tr class="list-item" data-id="{{id}}" data-target='system.damageProperties.effects'>
+                    <td>{{localize "WITCHER.Spell.variableEffect"}}</td>
+                    <td>
+                        <input type="checkbox" data-field="varEffect"
+                            {{checked effect.varEffect}} disabled />
+                    </td>
+                </tr>
+            {{/if}}
+        {{/each}}
     </table>
 </div>

@@ -20,9 +20,9 @@ export default class WitcherRitualSheet extends WitcherItemSheet {
     createSelects() {
         return {
             levelSpell: {
-                novice: 'WITCHER.Spell.Novice',
-                journeyman: 'WITCHER.Spell.Journeyman',
-                master: 'WITCHER.Spell.Master'
+                novice: 'WITCHER.Spell.novice',
+                journeyman: 'WITCHER.Spell.journeyman',
+                master: 'WITCHER.Spell.master'
             },
             templateType: {
                 rect: 'WITCHER.Spell.Square',

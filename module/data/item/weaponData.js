@@ -58,6 +58,14 @@ export default class WeaponData extends CommonItemData {
         };
     }
 
+    get canBeRepaired() {
+        return this.associatedDiagramUuid && this.reliable < this.maxReliability;
+    }
+
+    async repair() {
+        this.parent.update({ 'system.reliable': this.maxReliability });
+    }
+
     prepareDerivedData() {
         super.prepareDerivedData();
 

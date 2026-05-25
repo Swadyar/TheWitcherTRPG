@@ -72,16 +72,17 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
         context.systemFields = this.document.system.schema.fields;
         context.items = context.actor.items.filter(i => !i.system.isStored).sort((a, b) => a.sort - b.sort);
 
-        context.system.combatEffects.temporaryEffects.temporaryHpSum =
-            Object.values(context.system.combatEffects.temporaryEffects.temporaryHp).reduce((acc, temp) => acc + temp.value, 0);
+        context.system.combatEffects.temporaryEffects.temporaryHpSum = Object.values(
+            context.system.combatEffects.temporaryEffects.temporaryHp
+        ).reduce((acc, temp) => acc + temp.value, 0);
 
-        this._prepareGeneralInformation(context);
-        this._prepareCustomSkills(context);
-        this._prepareWeapons(context);
-        this._prepareArmor(context);
-        this._prepareSpells(context);
-        this._prepareItems(context);
-        this._prepareCritWounds(context);
+        await this._prepareGeneralInformation(context);
+        await this._prepareCustomSkills(context);
+        await this._prepareWeapons(context);
+        await this._prepareArmor(context);
+        await this._prepareSpells(context);
+        await this._prepareItems(context);
+        await this._prepareCritWounds(context);
 
         // Prepare active effects for easier access
         let temporaryItemImprovements = context.items
@@ -100,7 +101,7 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
         this.configuration?.render(true);
     }
 
-    _prepareCustomSkills(context) {
+    async _prepareCustomSkills(context) {
         let customSkills = this.actor.items.filter(item => item.type === 'skill');
 
         var filteredStats = Object.keys(CONFIG.WITCHER.statMap).reduce(function (stats, index) {
@@ -116,14 +117,14 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
         });
     }
 
-    _prepareGeneralInformation(context) {
+    async _prepareGeneralInformation(context) {
         let actor = context.actor;
 
         context.oldNotes = actor.getList('note');
         context.notes = actor.system.notes;
     }
 
-    _prepareSpells(context) {
+    async _prepareSpells(context) {
         context.spells = context.actor.getList('spell');
 
         context.noviceSpells = context.spells.filter(
@@ -152,7 +153,7 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
     /**
      * Organize and classify Items for Character sheets.
      */
-    _prepareItems(context) {
+    async _prepareItems(context) {
         let items = context.items;
 
         context.enhancements = items.filter(i => i.type == 'enhancement' && !i.system.applied);
@@ -162,9 +163,18 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
 
         context.totalWeight = context.actor.getTotalWeight();
         context.totalCost = context.items.cost();
+
+        let critPromises = await Promise.all(
+            this.document.itemTypes['criticalWound'].map(async crit => {
+                let description = await crit.system.enrichedText();
+                return { uuid: crit.uuid, ...description };
+            })
+        );
+        context.criticalWounds = {};
+        critPromises.forEach(crit => (context.criticalWounds[crit.uuid] = crit.description));
     }
 
-    _prepareWeapons(context) {
+    async _prepareWeapons(context) {
         context.weapons = context.items.filter(function (item) {
             return (
                 item.type == 'weapon' ||
@@ -193,33 +203,16 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
         });
     }
 
-    _prepareArmor(context) {
+    async _prepareArmor(context) {
         context.armors = context.items.filter(function (item) {
             return (
                 item.type == 'armor' ||
                 (item.type == 'enhancement' && item.system.type == 'armor' && item.system.applied == false)
             );
         });
-
-        context.armors.forEach(armor => {
-            if (armor.system.enhancements > 0 && armor.system.enhancements != armor.system.enhancementItemIds.length) {
-                let newEnhancementList = [];
-                let enhancementItems = armor.system.enhancementItems ?? [];
-                for (let i = 0; i < armor.system.enhancements; i++) {
-                    let element = enhancementItems[i];
-                    if (element && JSON.stringify(element) != '{}') {
-                        newEnhancementList.push(element);
-                    } else {
-                        newEnhancementList.push({});
-                    }
-                }
-                let item = context.actor.items.get(armor._id);
-                item.system.enhancementItems = newEnhancementList;
-            }
-        });
     }
 
-    _prepareCritWounds(context) {
+    async _prepareCritWounds(context) {
         let wounds = context.system.critWounds;
 
         wounds.forEach((wound, index) => {

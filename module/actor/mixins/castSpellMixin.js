@@ -162,23 +162,7 @@ export let castSpellMixin = {
             rollFormula += !displayRollDetails ? ` -3` : ` -3[${game.i18n.localize('WITCHER.Dialog.attackExtra')}]`;
         }
 
-        switch (spellItem.system.source) {
-            case 'mixedElements':
-                templateInfo.spellSource = 'WITCHER.Spell.mixedElements';
-                break;
-            case 'earth':
-                templateInfo.spellSource = 'WITCHER.Spell.earth';
-                break;
-            case 'air':
-                templateInfo.spellSource = 'WITCHER.Spell.air';
-                break;
-            case 'fire':
-                templateInfo.spellSource = 'WITCHER.Spell.fire';
-                break;
-            case 'Water':
-                templateInfo.spellSource = 'WITCHER.Spell.water';
-                break;
-        }
+        templateInfo.spellSource = 'WITCHER.Spell.' + spellItem.system.source;
 
         if (spellItem.system.duration) {
             let durationText = spellItem.system.duration;
@@ -200,7 +184,7 @@ export let castSpellMixin = {
             if (spellItem.system.staminaIsVar) {
                 dmg = this.calcStaminaMulti(origStaCost, dmg);
 
-                Object.keys(damage.properties?.effects)?.forEach(effect => {
+                Object.values(damage.properties?.effects)?.forEach(effect => {
                     if (effect.varEffect) {
                         effect.percentage = this.calcStaminaMulti(origStaCost, effect.percentage);
                     }
@@ -251,6 +235,9 @@ export let castSpellMixin = {
                 damage
             }
         );
+
+        damage.properties = damage.properties.toObject(false);
+
         let messageData = new ChatMessageData(this, chatMessage, 'attack', {
             attacker: this.uuid,
             attack: spellItem.getItemAttack(),

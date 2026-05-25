@@ -5,34 +5,6 @@ import { costEditMixin } from '../mixins/costEditMixin.js';
 
 const DialogV2 = foundry.applications.api.DialogV2;
 
-const repairableItemTypes = ['weapon', 'armor'];
-const durabilityLocations = [
-    { label: ['WITCHER.Repair.damagedLocations.weapon'], reliability: 'reliable', maxReliability: 'maxReliability' },
-    { label: ['WITCHER.Armor.LocationHead'], reliability: 'headStopping', maxReliability: 'headMaxStopping' },
-    { label: ['WITCHER.Armor.LocationTorso'], reliability: 'torsoStopping', maxReliability: 'torsoMaxStopping' },
-    {
-        label: ['WITCHER.Location.Left', 'WITCHER.Armor.LocationArm'],
-        reliability: 'leftArmStopping',
-        maxReliability: 'leftArmMaxStopping'
-    },
-    {
-        label: ['WITCHER.Location.Right', 'WITCHER.Armor.LocationArm'],
-        reliability: 'rightArmStopping',
-        maxReliability: 'rightArmMaxStopping'
-    },
-    {
-        label: ['WITCHER.Location.Left', 'WITCHER.Armor.LocationLeg'],
-        reliability: 'leftLegStopping',
-        maxReliability: 'leftLegMaxStopping'
-    },
-    {
-        label: ['WITCHER.Location.Right', 'WITCHER.Armor.LocationLeg'],
-        reliability: 'rightLegStopping',
-        maxReliability: 'rightLegMaxStopping'
-    },
-    { label: ['WITCHER.Repair.damagedLocations.shield'], reliability: 'reliability', maxReliability: 'reliabilityMax' }
-];
-
 const repairModifier = -5;
 const perEnchantModifier = 2;
 
@@ -79,32 +51,7 @@ class Repair {
             }
         }
 
-        return new RepairData(
-            actor,
-            item,
-            diagram,
-            ownedComponents,
-            missingComponents,
-            unknownComponents,
-            this.prepareDamageLocationsData(item),
-            artisan
-        );
-    }
-
-    prepareDamageLocationsData(item) {
-        return this.findDamagedLocations(item).map(loc => {
-            const label = loc.label.map(l => game.i18n.localize(l)).join(' ');
-            const reliabilityValue = item.system[loc.reliability];
-            const maxReliabilityValue = item.system[loc.maxReliability];
-
-            return {
-                label: label,
-                reliability: loc.reliability,
-                reliabilityValue: reliabilityValue,
-                maxReliability: loc.maxReliability,
-                maxReliabilityValue: maxReliabilityValue
-            };
-        });
+        return new RepairData(actor, item, diagram, ownedComponents, missingComponents, unknownComponents, artisan);
     }
 
     async processRequest(owner, item, artisan) {
@@ -252,8 +199,7 @@ class Repair {
 
     async gmRepair(data) {
         await this.sendRepairInfoToChat(data, false);
-
-        this._doRestoreReliability(data.item, data.damagedLocations);
+        data.item.system.repair();
     }
 
     prepareRollFormula(data) {
@@ -264,7 +210,12 @@ class Repair {
 
         const displayRollDetails = game.settings.get('TheWitcherTRPG', 'displayRollsDetails');
 
-        let rollFormula = displayRollDetails
+        let rollFormula = '';
+        if (game.settings.get('TheWitcherTRPG', 'woundsAffectSkillBase')) {
+            rollFormula += '(';
+        }
+
+        rollFormula += displayRollDetails
             ? `1d10+${stat}[${statName}]+${skill}[${data.skillName}]`
             : `1d10 + ${stat} + ${skill}`;
         rollFormula += data.executor.addAllModifiers('crafting');
@@ -335,56 +286,19 @@ class Repair {
         ChatMessage.create(chatData);
     }
 
-    canBeRepaired(item) {
-        return repairableItemTypes.includes(item.type) && item.system.associatedDiagramUuid && this.isDamaged(item);
-    }
-
-    isDamaged(item) {
-        return this.findDamagedLocations(item).length > 0;
-    }
-
-    findDamagedLocations(item) {
-        const system = item.system;
-
-        return durabilityLocations.filter(loc => system[loc.reliability] < system[loc.maxReliability]);
-    }
-
     restoreReliability(item) {
-        const damagedLocations = this.prepareDamageLocationsData(item);
-        this._doRestoreReliability(item, damagedLocations);
-    }
-
-    _doRestoreReliability(item, damagedLocations) {
-        const updateData = this.getRestoreReliabilityData(damagedLocations);
-        item.update(updateData);
-    }
-
-    getRestoreReliabilityData(damagedLocations) {
-        return damagedLocations.reduce((acc, loc) => {
-            acc[`system.${loc.reliability}`] = loc.maxReliabilityValue;
-            return acc;
-        }, {});
+        item.system.repair();
     }
 }
 
 class RepairData {
-    constructor(
-        actor,
-        item,
-        diagram,
-        ownedComponents,
-        missingComponents,
-        unknownComponents,
-        damagedLocations,
-        artisan = null
-    ) {
+    constructor(actor, item, diagram, ownedComponents, missingComponents, unknownComponents, artisan = null) {
         this.actor = actor;
         this.item = item;
         this.diagram = diagram;
         this.ownedComponents = ownedComponents;
         this.missingComponents = missingComponents;
         this.unknownComponents = unknownComponents;
-        this.damagedLocations = damagedLocations;
         this.artisan = artisan;
         this.additionalCost = 0;
     }
@@ -416,7 +330,7 @@ class RepairData {
     }
 
     get skillName() {
-        return game.i18n.localize(CONFIG.WITCHER.skillMap.crafting.label);
+        return game.i18n.localize(CONFIG.WITCHER.skillMap.crafting.rollLabel);
     }
 
     get repairPrice() {

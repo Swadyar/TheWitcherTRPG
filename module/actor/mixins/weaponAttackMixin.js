@@ -298,6 +298,8 @@ export let weaponAttackMixin = {
 
             messageDataFlavor += `<button class="damage">${game.i18n.localize('WITCHER.table.Damage')}</button>`;
 
+            damage.properties = damage.properties.toObject(false);
+
             if (weapon.system.rollOnlyDmg) {
                 weapon.rollDamage(damage);
             } else {

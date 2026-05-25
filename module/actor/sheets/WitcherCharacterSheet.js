@@ -49,7 +49,7 @@ export default class WitcherCharacterSheet extends WitcherActorSheet {
             scrollable: ['']
         },
         inventory: {
-            template: 'systems/TheWitcherTRPG/templates/partials/character/tab-inventory.hbs',
+            template: 'systems/TheWitcherTRPG/templates/sheets/actor/tabs/tab-inventory.hbs',
             scrollable: ['']
         },
         magic: {

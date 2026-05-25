@@ -86,26 +86,6 @@ export let itemContextMenu = {
             'system.enhancementItemIds': parent.system.enhancementItemIds.filter(id => id != choosenEnhancement.id)
         });
 
-        if (parent.type == 'armor') {
-            parent.update({
-                'system.headStopping': parent.system.headStopping - choosenEnhancement.system.stopping,
-                'system.headMaxStopping': parent.system.headMaxStopping - choosenEnhancement.system.stopping,
-                'system.torsoStopping': parent.system.torsoStopping - choosenEnhancement.system.stopping,
-                'system.torsoMaxStopping': parent.system.torsoMaxStopping - choosenEnhancement.system.stopping,
-                'system.leftArmStopping': parent.system.leftArmStopping - choosenEnhancement.system.stopping,
-                'system.leftArmMaxStopping': parent.system.leftArmMaxStopping - choosenEnhancement.system.stopping,
-                'system.rightArmStopping': parent.system.rightArmStopping - choosenEnhancement.system.stopping,
-                'system.rightArmMaxStopping': parent.system.rightArmMaxStopping - choosenEnhancement.system.stopping,
-                'system.leftLegStopping': parent.system.leftLegStopping - choosenEnhancement.system.stopping,
-                'system.leftLegMaxStopping': parent.system.leftLegMaxStopping - choosenEnhancement.system.stopping,
-                'system.rightLegStopping': parent.system.rightLegStopping - choosenEnhancement.system.stopping,
-                'system.rightLegMaxStopping': parent.system.rightLegMaxStopping - choosenEnhancement.system.stopping,
-                'system.bludgeoning': choosenEnhancement.system.bludgeoning ? false : parent.system.bludgeoning,
-                'system.slashing': choosenEnhancement.system.slashing ? false : parent.system.slashing,
-                'system.piercing': choosenEnhancement.system.piercing ? false : parent.system.piercing
-            });
-            parent.system.removeEffects(choosenEnhancement.system.effects);
-        }
     },
 
     giftableItem() {
