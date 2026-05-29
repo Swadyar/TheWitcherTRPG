@@ -1,6 +1,4 @@
-import { extendedRoll } from '../scripts/rolls/extendedRoll.js';
-import { getCustomModifier, getRandomInt } from '../scripts/helper.js';
-import { RollConfig } from '../scripts/rollConfig.js';
+import { getRandomInt } from '../scripts/helper.js';
 import { WITCHER } from '../setup/config.js';
 import { modifierMixin } from './mixins/modifierMixin.js';
 import { damageUtilMixin } from './mixins/damageUtilMixin.js';
@@ -11,7 +9,6 @@ import { verbalCombatMixin } from './mixins/verbalCombatMixin.js';
 import { defenseMixin } from './mixins/defenseMixin.js';
 import { damageMixin } from './mixins/damageMixin.js';
 import { temporaryEffectMixin } from './mixins/temporaryEffectMixin.js';
-import ChatMessageData from '../chatMessage/chatMessageData.js';
 import { professionMixin } from './mixins/professionMixin.js';
 import { armorMixin } from './mixins/armorMixin.js';
 import { healMixin } from './mixins/healMixin.js';
@@ -20,8 +17,6 @@ import { craftingMixin } from './mixins/craftingMixin.js';
 import { currencyConverterMixin } from './mixins/currencyConverterMixin.js';
 import { adrenalineMixin } from './mixins/adrenalineMixin.js';
 import { skillMixin } from './mixins/skillMixin.js';
-
-const DialogV2 = foundry.applications.api.DialogV2;
 
 const derivedPaths = ['derivedStats', 'attackStats'];
 
@@ -135,13 +130,17 @@ export default class WitcherActor extends Actor {
         this.system.derivedStats.stun.value = Math.clamp(base, 1, 10) + this.system.derivedStats.stun.totalModifiers;
         this.system.derivedStats.stun.max = Math.clamp(baseMax, 1, 10);
 
-        this.system.derivedStats.run.value = this.system.stats.spd.value * 3 + this.system.derivedStats.run.totalModifiers;
+        this.system.derivedStats.run.value =
+            this.system.stats.spd.value * 3 + this.system.derivedStats.run.totalModifiers;
         this.system.derivedStats.run.max = this.system.stats.spd.value * 3;
 
-        this.system.derivedStats.leap.value = (this.system.stats.spd.value * 3) / 5 + this.system.derivedStats.leap.totalModifiers;
+        this.system.derivedStats.leap.value = Math.floor(
+            (this.system.stats.spd.value * 3) / 5 + this.system.derivedStats.leap.totalModifiers
+        );
         this.system.derivedStats.leap.max = Math.floor((this.system.stats.spd.max * 3) / 5);
 
-        this.system.derivedStats.enc.value = this.system.stats.body.value * 10 + this.system.derivedStats.enc.totalModifiers;
+        this.system.derivedStats.enc.value =
+            this.system.stats.body.value * 10 + this.system.derivedStats.enc.totalModifiers;
         this.system.derivedStats.enc.max = this.system.stats.body.value * 10;
 
         this.system.derivedStats.rec.value = base + this.system.derivedStats.rec.totalModifiers;
