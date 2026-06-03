@@ -1300,6 +1300,7 @@
             "applyOnTarget": "Apply this active effect on target when used",
             "applyOnHit": "Apply this active effect on hit when used",
             "applyOnDamage": "Apply this active effect on damage when used",
+            "applyAfterCalculations": "Apply this active effect after all derived stats were calculated",
             "Error": {
                 "belongsToItem": "This effect belongs to an item"
             },

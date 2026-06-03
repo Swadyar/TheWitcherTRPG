@@ -122,4 +122,16 @@ export default class WitcherActiveEffect extends ActiveEffect {
 
         change.key = skill;
     }
+
+    /** @inheritDoc */
+    async _preUpdate(data, options, user) {
+        const allowed = await super._preUpdate(data, options, user);
+        if (allowed === false) return false;
+
+        let phase = data.system.applyAfterCalculations ? 'final' : 'initial';
+
+        data.system.changes.forEach(change => {
+            change.phase = phase;
+        });
+    }
 }

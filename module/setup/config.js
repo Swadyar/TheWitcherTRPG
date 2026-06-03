@@ -2425,7 +2425,3 @@ WITCHER.armorEffects = [
         addsResistance: true
     }
 ];
-
-WITCHER.activeEffects = {
-    phases: ['derived']
-};

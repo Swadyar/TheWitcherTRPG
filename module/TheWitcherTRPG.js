@@ -89,8 +89,6 @@ Hooks.once('ready', async function () {
 
     registerSocketListeners();
     deprecationWarnings();
-
-    CONFIG.ActiveEffect.phases = CONFIG.WITCHER.activeEffects.phases;
 });
 
 Hooks.once('polyglot.init', LanguageProvider => {

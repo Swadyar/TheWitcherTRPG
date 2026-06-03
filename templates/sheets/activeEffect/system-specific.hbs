@@ -1,4 +1,5 @@
 <section class="tab scrollable{{#if tab.active}} active{{/if}}" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+    {{formGroup systemFields.applyAfterCalculations value=document.system.applyAfterCalculations localize=true}}
     {{#if isItemEffect}}
         {{formGroup systemFields.applySelf value=document.system.applySelf localize=true}}
         {{formGroup systemFields.applyOnTarget value=document.system.applyOnTarget localize=true}}

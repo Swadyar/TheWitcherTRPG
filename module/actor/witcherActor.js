@@ -18,7 +18,6 @@ import { currencyConverterMixin } from './mixins/currencyConverterMixin.js';
 import { adrenalineMixin } from './mixins/adrenalineMixin.js';
 import { skillMixin } from './mixins/skillMixin.js';
 
-const derivedPaths = ['derivedStats', 'attackStats'];
 
 export default class WitcherActor extends Actor {
     /**
@@ -53,7 +52,6 @@ export default class WitcherActor extends Actor {
         this.calculateStats();
         this.calculateDerivedStats();
         this.calculateAttackStats();
-        this.applyActiveEffects('derived');
     }
 
     calculateStats() {
@@ -196,58 +194,6 @@ export default class WitcherActor extends Actor {
         this.system.attackStats.meleeBonus += meleeBonus;
         this.system.attackStats.punch.value = `1d6+${meleeBonus}`;
         this.system.attackStats.kick.value = `1d6+${4 + meleeBonus}`;
-    }
-
-    applyActiveEffects(phase) {
-        const changes = [];
-
-        switch (phase) {
-            case 'derived':
-                // Organize non-disabled effects by their application priority
-                for (const effect of this.allApplicableEffects()) {
-                    if (!effect.active) continue;
-                    changes.push(
-                        ...effect.system.changes
-                            .filter(change => derivedPaths.some(path => change.key.includes(path)))
-                            .map(change => {
-                                const c = foundry.utils.deepClone(change);
-                                c.effect = effect;
-                                c.priority = c.priority ?? c.mode * 10;
-                                return c;
-                            })
-                    );
-                }
-                break;
-            default:
-                //this is the native foundry call
-                this.statuses.clear();
-                // Organize non-disabled effects by their application priority
-                for (const effect of this.allApplicableEffects()) {
-                    if (!effect.active) continue;
-                    changes.push(
-                        ...effect.system.changes.map(change => {
-                            const c = foundry.utils.deepClone(change);
-                            c.effect = effect;
-                            c.priority = c.priority ?? c.mode * 10;
-                            return c;
-                        })
-                    );
-                    for (const statusId of effect.statuses) this.statuses.add(statusId);
-                }
-        }
-
-        changes.sort((a, b) => a.priority - b.priority);
-
-        // Apply all changes
-        let overrides = {};
-        const replacementData = this.getRollData();
-        for (const change of changes) {
-            const result = ActiveEffect.applyChange(this, change, { replacementData });
-            if (foundry.utils.isPlainObject(result)) Object.assign(overrides, result);
-        }
-
-        // Expand the set of final overrides
-        foundry.utils.mergeObject(this.overrides, foundry.utils.expandObject(overrides));
     }
 
     async applyStatus(effects) {
