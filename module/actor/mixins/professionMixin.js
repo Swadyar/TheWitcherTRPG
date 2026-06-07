@@ -155,7 +155,7 @@ export let professionMixin = {
             ? `${this.system.stats[skill.stat].value}+${skill.level ?? 0}`
             : `${this.system.stats[skill.stat].value}[${game.i18n.localize(CONFIG.WITCHER.statMap[skill.stat].label)}]+${skill.level ?? 0}[${skill.skillName}]`;
 
-        attFormula += this.addAllModifiers(attack.name);
+        attFormula += this.addActiveEffects(attack.name);
 
         if (targetOutsideLOS) {
             attFormula += !displayRollDetails

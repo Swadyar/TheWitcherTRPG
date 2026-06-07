@@ -142,9 +142,6 @@ export let defenseMixin = {
         let displayFormula = `1d10 + ${game.i18n.localize(skillMapEntry.attribute.labelShort)} + ${game.i18n.localize(skillMapEntry.label)}`;
 
         let rollFormula = '1d10+';
-        if (game.settings.get('TheWitcherTRPG', 'woundsAffectSkillBase')) {
-            rollFormula += '(';
-        }
         rollFormula += !displayRollDetails
             ? `${stat}+${skillValue}`
             : `${stat}[${game.i18n.localize(skillMapEntry.attribute.labelShort)}] +${skillValue}[${game.i18n.localize(skillMapEntry.label)}]`;
@@ -180,7 +177,7 @@ export let defenseMixin = {
             defenseAction.value,
             this.items.get(defenseItemId)?.type
         );
-        rollFormula += this.addAllModifiers(skillName);
+        rollFormula += this.addActiveEffects(skillName);
         rollFormula += this.addDefenseModifiers();
 
         if (skillName != 'resistmagic' && this.statuses.find(status => status == 'stun')) {

@@ -28,21 +28,6 @@
         </td>
     </tr>
     {{#if system.isOpened}}
-        <tr>
-            <td colspan="3">
-                <a class="add-custom-skill-modifier"><i class="fas fa-plus"></i></a>
-                {{#each system.modifiers as |modifier value|}}
-                    <div class="list-modifiers" data-id="{{modifier.id}}">
-                        <input class="medium edit-custom-skill-modifier" data-field="name" type="text"
-                            value="{{modifier.name}}" />
-                        <input class="small edit-custom-skill-modifier" data-field="value" type="number"
-                            value="{{modifier.value}}" />
-                        <a class="delete-custom-skill-modifier"><i class="fas fa-trash-alt"
-                                data-id="{{modifier.id}}"></i></a>
-                    </div>
-                {{/each}}
-            </td>
-        </tr>
         {{#if system.activeEffectModifiers}}
             <tr>
                 <td colspan="3">

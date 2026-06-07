@@ -347,7 +347,7 @@ export default class WitcherItem extends Item {
         for (const effect of this.allApplicableEffects()) {
             if (!effect.active) continue;
             changes.push(
-                ...effect.changes.map(change => {
+                ...effect.system.changes.map(change => {
                     const c = foundry.utils.deepClone(change);
                     c.effect = effect;
                     c.priority ??= c.mode * 10;

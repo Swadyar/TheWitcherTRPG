@@ -18,14 +18,13 @@ export default class Reflex extends foundry.abstract.DataModel {
 
     /** @inheritdoc */
     static migrateData(source) {
-        source.brawling.label = 'WITCHER.skills.brawling.label';
-        source.dodge.label = 'WITCHER.skills.dodgeEscape.label';
-        source.melee.label = 'WITCHER.skills.melee.label';
-        source.riding.label = 'WITCHER.skills.riding.label';
-        source.sailing.label = 'WITCHER.skills.sailing.label';
-        source.smallblades.label = 'WITCHER.skills.smallblades.label';
-        source.staffspear.label = 'WITCHER.skills.staffspear.label';
-        source.swordsmanship.label = 'WITCHER.skills.swordsmanship.label';
+        Object.keys(this.defineSchema()).forEach(skillName => {
+            if (source[skillName]) {
+                source[skillName].label = `WITCHER.skills.${skillName}.label`;
+            }
+        });
+
+        if (source.dodge) source.dodge.label = 'WITCHER.skills.dodgeEscape.label';
 
         return super.migrateData(source);
     }

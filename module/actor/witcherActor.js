@@ -1,6 +1,4 @@
-import { extendedRoll } from '../scripts/rolls/extendedRoll.js';
-import { getCustomModifier, getRandomInt } from '../scripts/helper.js';
-import { RollConfig } from '../scripts/rollConfig.js';
+import { getRandomInt } from '../scripts/helper.js';
 import { WITCHER } from '../setup/config.js';
 import { modifierMixin } from './mixins/modifierMixin.js';
 import { damageUtilMixin } from './mixins/damageUtilMixin.js';
@@ -11,7 +9,6 @@ import { verbalCombatMixin } from './mixins/verbalCombatMixin.js';
 import { defenseMixin } from './mixins/defenseMixin.js';
 import { damageMixin } from './mixins/damageMixin.js';
 import { temporaryEffectMixin } from './mixins/temporaryEffectMixin.js';
-import ChatMessageData from '../chatMessage/chatMessageData.js';
 import { professionMixin } from './mixins/professionMixin.js';
 import { armorMixin } from './mixins/armorMixin.js';
 import { healMixin } from './mixins/healMixin.js';
@@ -21,9 +18,6 @@ import { currencyConverterMixin } from './mixins/currencyConverterMixin.js';
 import { adrenalineMixin } from './mixins/adrenalineMixin.js';
 import { skillMixin } from './mixins/skillMixin.js';
 
-const DialogV2 = foundry.applications.api.DialogV2;
-
-const derivedPaths = ['derivedStats', 'attackStats'];
 
 export default class WitcherActor extends Actor {
     /**
@@ -58,7 +52,6 @@ export default class WitcherActor extends Actor {
         this.calculateStats();
         this.calculateDerivedStats();
         this.calculateAttackStats();
-        this.applyActiveEffects('derived');
     }
 
     calculateStats() {
@@ -77,8 +70,7 @@ export default class WitcherActor extends Actor {
     }
 
     calculateStat(stat) {
-        let totalModifiers = this.getAllModifiers(stat).totalModifiers + this.system.stats[stat].totalModifiers;
-        this.system.stats[stat].modifiers.forEach(item => (totalModifiers += Number(item.value)));
+        let totalModifiers = this.system.stats[stat].totalModifiers;
 
         //Adjust for encumbrance
         if (stat === 'ref' || stat === 'dex' || stat === 'spd') {
@@ -90,7 +82,7 @@ export default class WitcherActor extends Actor {
             totalModifiers -= this.calculateWeigthEncumbrance();
         }
 
-        let divider = this.getAllModifiers(stat).totalDivider;
+        let divider = 1;
 
         //Adjust for hp
         let HPvalue = this.system.derivedStats.hp.value;
@@ -116,12 +108,9 @@ export default class WitcherActor extends Actor {
     }
 
     calculateWeigthEncumbrance() {
-        let bodyTotalModifiers = this.getAllModifiers('body').totalModifiers + this.system.stats.body.totalModifiers;
-        this.system.stats.body.modifiers.forEach(item => (bodyTotalModifiers += Number(item.value)));
+        let bodyTotalModifiers = this.system.stats.body.totalModifiers;
         let currentEncumbrance =
-            (this.system.stats.body.max + bodyTotalModifiers) * 10 +
-            this.getAllModifiers('enc').totalModifiers +
-            this.system.derivedStats.enc.totalModifiers;
+            (this.system.stats.body.max + bodyTotalModifiers) * 10 + this.system.derivedStats.enc.totalModifiers;
         var totalWeights = this.getTotalWeight();
 
         let encDiff = 0;
@@ -136,57 +125,26 @@ export default class WitcherActor extends Actor {
         const base = Math.floor((this.system.stats.body.value + this.system.stats.will.value) / 2);
         const baseMax = Math.floor((this.system.stats.body.max + this.system.stats.will.max) / 2);
 
-        let stunTotalModifiers =
-            this.getAllModifiers('stun').totalModifiers + this.system.derivedStats.stun.totalModifiers;
-        let stunDivider = this.getAllModifiers('stun').totalDivider;
-        this.system.derivedStats.stun.modifiers.forEach(item => (stunTotalModifiers += Number(item.value)));
-        this.system.derivedStats.stun.value = Math.floor((Math.clamp(base, 1, 10) + stunTotalModifiers) / stunDivider);
+        this.system.derivedStats.stun.value = Math.clamp(base, 1, 10) + this.system.derivedStats.stun.totalModifiers;
         this.system.derivedStats.stun.max = Math.clamp(baseMax, 1, 10);
-        this.system.derivedStats.stun.totalModifiers = stunTotalModifiers;
 
-        let runTotalModifiers =
-            this.getAllModifiers('run').totalModifiers + this.system.derivedStats.run.totalModifiers;
-        let runDivider = this.getAllModifiers('run').totalDivider;
-        this.system.derivedStats.run.modifiers.forEach(item => (runTotalModifiers += Number(item.value)));
-        this.system.derivedStats.run.value = Math.floor(
-            (this.system.stats.spd.value * 3 + runTotalModifiers) / runDivider
-        );
+        this.system.derivedStats.run.value =
+            this.system.stats.spd.value * 3 + this.system.derivedStats.run.totalModifiers;
         this.system.derivedStats.run.max = this.system.stats.spd.value * 3;
-        this.system.derivedStats.run.totalModifiers = runTotalModifiers;
 
-        let leapTotalModifiers =
-            this.getAllModifiers('leap').totalModifiers + this.system.derivedStats.leap.totalModifiers;
-        let leapDivider = this.getAllModifiers('leap').totalDivider;
-        this.system.derivedStats.leap.modifiers.forEach(item => (leapTotalModifiers += Number(item.value)));
-        this.system.derivedStats.leap.value =
-            Math.floor((this.system.stats.spd.value * 3) / 5 + leapTotalModifiers) / leapDivider;
-        this.system.derivedStats.leap.max = Math.floor((this.system.stats.spd.max * 3) / 5);
-        this.system.derivedStats.leap.totalModifiers = leapTotalModifiers;
-
-        let encTotalModifiers =
-            this.getAllModifiers('enc').totalModifiers + this.system.derivedStats.enc.totalModifiers;
-        let encDivider = this.getAllModifiers('enc').totalDivider;
-        this.system.derivedStats.enc.modifiers.forEach(item => (encTotalModifiers += Number(item.value)));
-        this.system.derivedStats.enc.value = Math.floor(
-            (this.system.stats.body.value * 10 + encTotalModifiers) / encDivider
+        this.system.derivedStats.leap.value = Math.floor(
+            (this.system.stats.spd.value * 3) / 5 + this.system.derivedStats.leap.totalModifiers
         );
+        this.system.derivedStats.leap.max = Math.floor((this.system.stats.spd.max * 3) / 5);
+
+        this.system.derivedStats.enc.value =
+            this.system.stats.body.value * 10 + this.system.derivedStats.enc.totalModifiers;
         this.system.derivedStats.enc.max = this.system.stats.body.value * 10;
-        this.system.derivedStats.enc.totalModifiers = encTotalModifiers;
 
-        let recTotalModifiers =
-            this.getAllModifiers('rec').totalModifiers + this.system.derivedStats.rec.totalModifiers;
-        let recDivider = this.getAllModifiers('rec').totalDivider;
-        this.system.derivedStats.rec.modifiers.forEach(item => (recTotalModifiers += Number(item.value)));
-        this.system.derivedStats.rec.value = Math.floor((base + recTotalModifiers) / recDivider);
+        this.system.derivedStats.rec.value = base + this.system.derivedStats.rec.totalModifiers;
         this.system.derivedStats.rec.max = baseMax;
-        this.system.derivedStats.rec.totalModifiers = recTotalModifiers;
 
-        let wtTotalModifiers =
-            this.getAllModifiers('woundTreshold').totalModifiers +
-            this.system.derivedStats.woundTreshold.totalModifiers;
-        let wtDivider = this.getAllModifiers('woundTreshold').totalDivider;
-        this.system.derivedStats.woundTreshold.modifiers.forEach(item => (wtTotalModifiers += Number(item.value)));
-        this.system.derivedStats.woundTreshold.value = Math.floor((baseMax + wtTotalModifiers) / wtDivider);
+        this.system.derivedStats.woundTreshold.value = baseMax + this.system.derivedStats.woundTreshold.totalModifiers;
         this.system.derivedStats.woundTreshold.max = baseMax;
     }
 
@@ -199,10 +157,8 @@ export default class WitcherActor extends Actor {
     }
 
     calculateDerivedStat(stat) {
-        let totalModifiers = this.getAllModifiers(stat).totalModifiers || 0;
-        let divider = this.getAllModifiers(stat).totalDivider || 1;
-        this.system.derivedStats[stat].modifiers.forEach(item => (totalModifiers += Number(item.value)));
-        totalModifiers += this.system.derivedStats[stat].totalModifiers;
+        let totalModifiers = this.system.derivedStats[stat].totalModifiers;
+        let divider = 1;
 
         const base = Math.floor((this.system.stats.body.value + this.system.stats.will.value) / 2);
         if (!this.system.customStat && (stat === 'hp' || stat === 'sta')) {
@@ -238,58 +194,6 @@ export default class WitcherActor extends Actor {
         this.system.attackStats.meleeBonus += meleeBonus;
         this.system.attackStats.punch.value = `1d6+${meleeBonus}`;
         this.system.attackStats.kick.value = `1d6+${4 + meleeBonus}`;
-    }
-
-    applyActiveEffects(preparationStage) {
-        const overrides = {};
-        const changes = [];
-
-        switch (preparationStage) {
-            case 'derived':
-                // Organize non-disabled effects by their application priority
-                for (const effect of this.allApplicableEffects()) {
-                    if (!effect.active) continue;
-                    changes.push(
-                        ...effect.changes
-                            .filter(change => derivedPaths.some(path => change.key.includes(path)))
-                            .map(change => {
-                                const c = foundry.utils.deepClone(change);
-                                c.effect = effect;
-                                c.priority = c.priority ?? c.mode * 10;
-                                return c;
-                            })
-                    );
-                }
-                break;
-            default:
-                //this is the native foundry call
-                this.statuses.clear();
-                // Organize non-disabled effects by their application priority
-                for (const effect of this.allApplicableEffects()) {
-                    if (!effect.active) continue;
-                    changes.push(
-                        ...effect.changes.map(change => {
-                            const c = foundry.utils.deepClone(change);
-                            c.effect = effect;
-                            c.priority = c.priority ?? c.mode * 10;
-                            return c;
-                        })
-                    );
-                    for (const statusId of effect.statuses) this.statuses.add(statusId);
-                }
-        }
-
-        changes.sort((a, b) => a.priority - b.priority);
-
-        // Apply all changes
-        for (const change of changes) {
-            if (!change.key) continue;
-            const changes = change.effect.apply(this, change);
-            Object.assign(overrides, changes);
-        }
-
-        // Expand the set of final overrides
-        this.overrides = foundry.utils.expandObject(overrides);
     }
 
     async applyStatus(effects) {

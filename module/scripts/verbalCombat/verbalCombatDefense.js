@@ -6,9 +6,9 @@ import ChatMessageData from '../../chatMessage/chatMessageData.js';
 export function addVerbalCombatDefenseMessageContextOptions(html, options) {
     let canDefend = li => li.querySelector('.verbal-combat-attack-message')?.length;
     options.push({
-        name: `${game.i18n.localize('WITCHER.Context.Defense')}`,
+        label: `${game.i18n.localize('WITCHER.Context.Defense')}`,
         icon: '<i class="fas fa-shield-alt"></i>',
-        condition: canDefend,
+        visible: canDefend,
         callback: async li => {
             executeDefense(await getInteractActor(), li.dataset.messageId, li.find('.dice-total')[0].innerText);
         }
@@ -76,7 +76,7 @@ async function executeDefenseCallback(actor, totalAttack, html) {
         rollFormula += !displayRollDetails
             ? ` +${vcStat} +${vcSkill}`
             : ` +${vcStat}[${game.i18n.localize(vcStatName)}] +${vcSkill}[${game.i18n.localize(vcSkillName)}]`;
-        rollFormula += actor.addAllModifiers(verbalCombat.skill.name);
+        rollFormula += actor.addActiveEffects(verbalCombat.skill.name);
     }
 
     let customAtt = html.find('[name=customModifiers]')[0].value;

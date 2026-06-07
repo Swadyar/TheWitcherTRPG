@@ -1,7 +1,6 @@
 import { deathsaveMixin } from './mixins/deathSaveMixin.js';
 import { criticalWoundMixin } from './mixins/criticalWoundMixin.js';
 import { noteMixin } from './mixins/noteMixin.js';
-import { skillModifierMixin } from './mixins/skillModifierMixin.js';
 import { skillMixin } from './mixins/skillMixin.js';
 import { statMixin } from './mixins/statMixin.js';
 import { itemMixin } from './mixins/itemMixin.js';
@@ -47,7 +46,6 @@ export default class WitcherActorSheetV1 extends foundry.appv1.sheets.ActorSheet
         this._prepareArmor(context);
         this._prepareSpells(context);
         this._prepareItems(context);
-        this._prepareCritWounds(context);
 
         // Prepare active effects for easier access
         let temporaryItemImprovements = context.items
@@ -195,15 +193,6 @@ export default class WitcherActorSheetV1 extends foundry.appv1.sheets.ActorSheet
         });
     }
 
-    _prepareCritWounds(context) {
-        let wounds = context.system.critWounds;
-
-        wounds.forEach((wound, index) => {
-            wounds[index].description = CONFIG.WITCHER.Crit[wound.configEntry]?.description;
-            wounds[index].effect = CONFIG.WITCHER.Crit[wound.configEntry]?.effect[wound.mod];
-        });
-    }
-
     activateListeners(html) {
         super.activateListeners(html);
 
@@ -221,7 +210,6 @@ export default class WitcherActorSheetV1 extends foundry.appv1.sheets.ActorSheet
         //mixins
         this.statListener(html[0]);
         this.skillListener(html[0]);
-        this.skillModifierListener(html[0]);
         this.customSkillListener(html[0]);
 
         this.itemListener(html[0]);
@@ -301,7 +289,6 @@ export default class WitcherActorSheetV1 extends foundry.appv1.sheets.ActorSheet
 
 Object.assign(WitcherActorSheetV1.prototype, statMixin);
 Object.assign(WitcherActorSheetV1.prototype, skillMixin);
-Object.assign(WitcherActorSheetV1.prototype, skillModifierMixin);
 Object.assign(WitcherActorSheetV1.prototype, customSkillMixin);
 
 Object.assign(WitcherActorSheetV1.prototype, itemMixin);

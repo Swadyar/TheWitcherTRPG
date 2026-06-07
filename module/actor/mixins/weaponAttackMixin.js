@@ -177,9 +177,6 @@ export let weaponAttackMixin = {
         for (let i = 0; i < attacknumber; i++) {
             let attFormula = '1d10+';
             let skill = CONFIG.WITCHER.skillMap[attack.skill];
-            if (game.settings.get('TheWitcherTRPG', 'woundsAffectSkillBase')) {
-                attFormula += '(';
-            }
             if (options.skillReplacement) {
                 attFormula += !displayRollDetails
                     ? `${this.system.stats[options.skillReplacement.stat].value}+${options.skillReplacement.level ?? 0}`
@@ -298,11 +295,10 @@ export let weaponAttackMixin = {
 
             messageDataFlavor += `<button class="damage">${game.i18n.localize('WITCHER.table.Damage')}</button>`;
 
-            damage.properties = damage.properties.toObject(false);
-
             if (weapon.system.rollOnlyDmg) {
                 weapon.rollDamage(damage);
             } else {
+                damage.properties = damage.properties.toObject(false);
                 let messageData = new ChatMessageData(this, messageDataFlavor, 'attack', {
                     attacker: this.uuid,
                     attack: attack,
@@ -322,7 +318,7 @@ export let weaponAttackMixin = {
             ? `${this.system.stats[skill.attribute.name].value}+${this.system.skills[skill.attribute.name][skill.name].value}`
             : `${this.system.stats[skill.attribute.name].value}[${game.i18n.localize(skill.attribute.label)}]+${this.system.skills[skill.attribute.name][skill.name].value}[${game.i18n.localize(skill.label)}]`;
 
-        attFormula += this.addAllModifiers(skill.name);
+        attFormula += this.addActiveEffects(skill.name);
         attFormula += this.addAttackModifiers();
 
         return attFormula;
@@ -376,37 +372,8 @@ export let weaponAttackMixin = {
         }
 
         if (this.system.lifepathModifiers.attacks[strike]) {
-            formula += this.system.lifepathModifiers.attacks[strike] > 0 ? ' +' : ' ';
-            formula += `${this.system.lifepathModifiers.attacks[strike]}`;
+            formula += `+${this.system.lifepathModifiers.attacks[strike]}`;
             formula += displayRollDetails ? `[${game.i18n.localize('WITCHER.Actor.Lifepath.Bonus')}]` : '';
-        }
-
-        if (strike == 'joint') {
-            formula += !displayRollDetails
-                ? `${
-                      this.system.lifepathModifiers.jointStrikeAttackBonus > 0
-                          ? ` +${this.system.lifepathModifiers.jointStrikeAttackBonus}`
-                          : ''
-                  }`
-                : `${
-                      this.system.lifepathModifiers.jointStrikeAttackBonus > 0
-                          ? ` +${this.system.lifepathModifiers.jointStrikeAttackBonus}[${game.i18n.localize('WITCHER.Actor.Lifepath.Bonus')}]`
-                          : ''
-                  }`;
-        }
-
-        if (strike == 'strong') {
-            formula += !displayRollDetails
-                ? `${
-                      this.system.lifepathModifiers.strongStrikeAttackBonus > 0
-                          ? ` +${this.system.lifepathModifiers.strongStrikeAttackBonus}`
-                          : ''
-                  }`
-                : `${
-                      this.system.lifepathModifiers.strongStrikeAttackBonus > 0
-                          ? ` +${this.system.lifepathModifiers.strongStrikeAttackBonus}[${game.i18n.localize('WITCHER.Actor.Lifepath.Bonus')}]`
-                          : ''
-                  }`;
         }
 
         return formula;

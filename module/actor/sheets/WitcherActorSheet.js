@@ -1,7 +1,6 @@
 import { deathsaveMixin } from './mixins/deathSaveMixin.js';
 import { criticalWoundMixin } from './mixins/criticalWoundMixin.js';
 import { noteMixin } from './mixins/noteMixin.js';
-import { skillModifierMixin } from './mixins/skillModifierMixin.js';
 import { skillMixin } from './mixins/skillMixin.js';
 import { statMixin } from './mixins/statMixin.js';
 import { itemMixin } from './mixins/itemMixin.js';
@@ -82,7 +81,6 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
         await this._prepareArmor(context);
         await this._prepareSpells(context);
         await this._prepareItems(context);
-        await this._prepareCritWounds(context);
 
         // Prepare active effects for easier access
         let temporaryItemImprovements = context.items
@@ -212,15 +210,6 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
         });
     }
 
-    async _prepareCritWounds(context) {
-        let wounds = context.system.critWounds;
-
-        wounds.forEach((wound, index) => {
-            wounds[index].description = CONFIG.WITCHER.Crit[wound.configEntry]?.description;
-            wounds[index].effect = CONFIG.WITCHER.Crit[wound.configEntry]?.effect[wound.mod];
-        });
-    }
-
     async _onRender(context, options) {
         await super._onRender(context, options);
 
@@ -243,7 +232,6 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
         //mixins
         this.statListener(html);
         this.skillListener(html);
-        this.skillModifierListener(html);
         this.customSkillListener(html);
 
         this.itemListener(html);
@@ -321,7 +309,6 @@ export default class WitcherActorSheet extends HandlebarsApplicationMixin(ActorS
 
 Object.assign(WitcherActorSheet.prototype, statMixin);
 Object.assign(WitcherActorSheet.prototype, skillMixin);
-Object.assign(WitcherActorSheet.prototype, skillModifierMixin);
 Object.assign(WitcherActorSheet.prototype, customSkillMixin);
 
 Object.assign(WitcherActorSheet.prototype, itemMixin);

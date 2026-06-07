@@ -20,9 +20,6 @@ export let castSpellMixin = {
         };
 
         let rollFormula = '1d10+';
-        if (game.settings.get('TheWitcherTRPG', 'woundsAffectSkillBase')) {
-            rollFormula += '(';
-        }
         rollFormula += !displayRollDetails
             ? `${this.system.stats.will.value}`
             : `${this.system.stats.will.value}[${game.i18n.localize(CONFIG.WITCHER.statMap.will.label)}]`;
@@ -32,7 +29,7 @@ export let castSpellMixin = {
         rollFormula +=
             `+${this.system.skills.will[usedSkill.name].value}` +
             (displayRollDetails ? `[${game.i18n.localize(usedSkill.label)}]` : '');
-        rollFormula += this.addAllModifiers(usedSkill.name);
+        rollFormula += this.addActiveEffects(usedSkill.name);
         rollFormula += this.addAttackModifiers();
 
         let armorEnc = this.getArmorEcumbrance();

@@ -4,9 +4,9 @@ import DefenseMessageData from '../../data/chatMessage/defenseMessageData.js';
 export function addFumbleContextOptions(html, options) {
     let isFumble = li => game.messages.get(li.dataset.messageId).rolls[0]?.options.fumble;
     options.push({
-        name: `${game.i18n.localize('WITCHER.Context.fumble')}`,
+        label: `${game.i18n.localize('WITCHER.Context.fumble')}`,
         icon: '<i class="fas fa-user-minus"></i>',
-        condition: isFumble,
+        visible: isFumble,
         callback: async li => {
             applyFumble(game.messages.get(li.dataset.messageId));
         }
@@ -112,7 +112,7 @@ async function createResultMessage(actor, result) {
         user: game.user.id,
         content: content,
         speaker: ChatMessage.getSpeaker({ actor: actor }),
-        type: CONST.CHAT_MESSAGE_STYLES.OTHER
+        style: CONST.CHAT_MESSAGE_STYLES.OTHER
     };
 
     ChatMessage.create(chatData);

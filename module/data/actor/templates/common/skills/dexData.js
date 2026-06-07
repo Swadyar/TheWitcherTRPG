@@ -15,11 +15,15 @@ export default class Dexterity extends foundry.abstract.DataModel {
 
     /** @inheritdoc */
     static migrateData(source) {
-        source.archery.label = 'WITCHER.skills.archery.label';
-        source.athletics.label = 'WITCHER.skills.athletics.label';
-        source.crossbow.label = 'WITCHER.skills.crossbow.label';
-        source.sleight.label = 'WITCHER.skills.sleightOfHand.label';
-        source.stealth.label = 'WITCHER.skills.stealth.label';
+        Object.keys(this.defineSchema()).forEach(skillName => {
+            if (source[skillName]) {
+                source[skillName].label = `WITCHER.skills.${skillName}.label`;
+            }
+        });
+
+        if (source.sleight) {
+            source.sleight.label = 'WITCHER.skills.sleightOfHand.label';
+        }
 
         return super.migrateData(source);
     }

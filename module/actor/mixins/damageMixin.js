@@ -44,7 +44,7 @@ export let damageMixin = {
                 content: messageContent,
                 speaker: ChatMessage.getSpeaker({ actor: this })
             };
-            ChatMessage.applyRollMode(messageData, game.settings.get('core', 'rollMode'));
+            ChatMessage.applyMode(messageData, game.settings.get('core', 'messageMode'));
             ChatMessage.create(messageData);
             return 0;
         } else {
@@ -93,10 +93,10 @@ export let damageMixin = {
         const content = await foundry.applications.handlebars.renderTemplate(messageTemplate, templateContext);
         const chatData = {
             content: content,
-            type: CONST.CHAT_MESSAGE_STYLES.OTHER
+            style: CONST.CHAT_MESSAGE_STYLES.OTHER
         };
 
-        ChatMessage.applyRollMode(chatData, game.settings.get('core', 'rollMode'));
+        ChatMessage.applyMode(chatData, game.settings.get('core', 'messageMode'));
         let message = await ChatMessage.create(chatData);
 
         await this.updateDerivedStat(totalAppliedDamage, derivedStat);
@@ -107,10 +107,10 @@ export let damageMixin = {
         //first subtract from temp health
         if (derivedStat == 'hp') {
             let tempHpArray = this.temporaryEffects.filter(ae =>
-                ae.changes.find(change => change.key.includes('temporaryHp'))
+                ae.system.changes.find(change => change.key.includes('temporaryHp'))
             );
             for (let tempHp of tempHpArray) {
-                for (let change of tempHp.changes) {
+                for (let change of tempHp.system.changes) {
                     let changeContent = JSON.parse(change.value);
                     if (changeContent.value < damage) {
                         damage -= changeContent.value;
@@ -121,7 +121,7 @@ export let damageMixin = {
                     }
                     change.value = JSON.stringify(changeContent);
                 }
-                await tempHp.update({ changes: tempHp.changes });
+                await tempHp.update({ changes: tempHp.system.changes });
             }
         }
 
@@ -257,7 +257,7 @@ export let damageMixin = {
         };
 
         let rollResult = await new Roll('1').evaluate();
-        ChatMessage.applyRollMode(messageData, game.settings.get('core', 'rollMode'));
+        ChatMessage.applyMode(messageData, game.settings.get('core', 'messageMode'));
         rollResult.toMessage(messageData);
     },
 
@@ -268,10 +268,10 @@ export let damageMixin = {
         const chatData = {
             content: content,
             speaker: ChatMessage.getSpeaker({ actor: this }),
-            type: CONST.CHAT_MESSAGE_STYLES.OTHER
+            style: CONST.CHAT_MESSAGE_STYLES.OTHER
         };
 
-        ChatMessage.applyRollMode(chatData, game.settings.get('core', 'rollMode'));
+        ChatMessage.applyMode(chatData, game.settings.get('core', 'messageMode'));
         ChatMessage.create(chatData);
     },
 
@@ -328,7 +328,7 @@ export let damageMixin = {
         const chatData = {
             content: `<div>${wound.name}</div><div>${wound.system.description}</div>`,
             speaker: ChatMessage.getSpeaker({ actor: this }),
-            type: CONST.CHAT_MESSAGE_STYLES.OTHER
+            style: CONST.CHAT_MESSAGE_STYLES.OTHER
         };
         ChatMessage.create(chatData);
     },

@@ -57,15 +57,12 @@ export let skillMixin = {
         let messageData = new ChatMessageData(this, `${attributeLabel}: ${skillLabel} Check`);
 
         let rollFormula = '1d10 +';
-        if (game.settings.get('TheWitcherTRPG', 'woundsAffectSkillBase')) {
-            rollFormula += '(';
-        }
         if (!this.system.dontAddAttr) {
             rollFormula += !displayRollDetails ? `${attributeValue} +` : `${attributeValue}[${attributeLabel}] +`;
         }
 
         rollFormula += !displayRollDetails ? `${skillValue}` : `${skillValue}[${skillLabel}]`;
-        rollFormula += this.addAllModifiers(skillMapEntry.name);
+        rollFormula += this.addActiveEffects(skillMapEntry.name);
 
         rollFormula += this.addSocialStanding(attribute, skillName);
 
@@ -157,7 +154,7 @@ export let skillMixin = {
                 : `1d10+${attributeValue}[${attributeLabel}]+${skillValue}[${skillLabel}]`;
         }
 
-        rollFormula += this.addAllModifiers(customSkill.name);
+        rollFormula += this.addActiveEffects(customSkill.name);
         customSkill.system.modifiers?.forEach(mod => {
             if (mod.value < 0) {
                 rollFormula += !displayRollDetails ? ` ${mod.value}` : ` ${mod.value}[${mod.name}]`;

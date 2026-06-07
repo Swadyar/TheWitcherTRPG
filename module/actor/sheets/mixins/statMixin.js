@@ -4,72 +4,6 @@ import ChatMessageData from '../../../chatMessage/chatMessageData.js';
 import { getCustomModifier } from '../../../scripts/helper.js';
 
 export let statMixin = {
-    _onStatModifierDisplay(event) {
-        event.preventDefault();
-        let stat = event.currentTarget.closest('.stat-display').dataset.stat;
-
-        if (stat == 'toxicity') {
-            this.actor.update({ [`system.stats.${stat}.isOpened`]: !this.actor.system.stats[stat].isOpened });
-        } else if (stat == 'reputation') {
-            this.actor.update({ [`system.${stat}.isOpened`]: !this.actor.system[stat].isOpened });
-        } else {
-            this.actor.update({
-                [`system.${this.statMap[stat].origin}.${stat}.isOpened`]:
-                    !this.actor.system[this.statMap[stat].origin][stat].isOpened
-            });
-        }
-    },
-
-    async _onEditStatModifier(event) {
-        event.preventDefault();
-        let stat = event.currentTarget.closest('.stat-display').dataset.stat;
-
-        let element = event.currentTarget;
-        let itemId = element.closest('.list-modifiers').dataset.id;
-
-        let field = element.dataset.field;
-        let value = element.value;
-        let modifiers = [];
-
-        if (stat == 'reputation') {
-            modifiers = this.actor.system.reputation.modifiers;
-        } else {
-            modifiers = this.actor.system[this.statMap[stat].origin][stat].modifiers;
-        }
-
-        let objIndex = modifiers.findIndex(obj => obj.id == itemId);
-        modifiers[objIndex][field] = value;
-
-        if (stat == 'reputation') {
-            this.actor.update({ [`system.${stat}.modifiers`]: modifiers });
-        } else {
-            this.actor.update({ [`system.${this.statMap[stat].origin}.${stat}.modifiers`]: modifiers });
-        }
-    },
-
-    async _onRemoveStatModifier(event) {
-        event.preventDefault();
-        let stat = event.currentTarget.closest('.stat-display').dataset.stat;
-        let type = event.currentTarget.closest('.stat-display').dataset.type;
-        let prevModList = [];
-        if (type == 'derived') {
-            prevModList = this.actor.system.derivedStats[stat].modifiers;
-        } else if (type == 'reputation') {
-            prevModList = this.actor.system.reputation.modifiers;
-        } else {
-            prevModList = this.actor.system.stats[stat].modifiers;
-        }
-        const newModList = Object.values(prevModList).map(details => details);
-        const idxToRm = newModList.findIndex(v => v.id === event.target.dataset.id);
-        newModList.splice(idxToRm, 1);
-
-        if (stat == 'reputation') {
-            this.actor.update({ [`system.${stat}.modifiers`]: newModList });
-        } else {
-            this.actor.update({ [`system.${this.statMap[stat].origin}.${stat}.modifiers`]: newModList });
-        }
-    },
-
     /** Do not delete. This method is here to give external modules the possibility to make skill rolls. */
     async _onStatSaveRoll(event) {
         let stat = event.currentTarget.closest('.stat-display').dataset.stat;
@@ -104,28 +38,15 @@ export let statMixin = {
     async _onReputation(event) {
         let dialogTemplate = `
         <h1>${game.i18n.localize('WITCHER.Reputation')}</h1>`;
-        if (this.actor.system.reputation.modifiers.length > 0) {
-            dialogTemplate += `<label>${game.i18n.localize('WITCHER.Apply.Mod')}</label>`;
-            this.actor.system.reputation.modifiers.forEach(
-                mod =>
-                    (dialogTemplate += `<div><input id="${mod.name.replace(/\s/g, '')}" type="checkbox" unchecked/> ${mod.name}(${mod.value})</div>`)
-            );
-        }
+
         new Dialog({
             title: game.i18n.localize('WITCHER.ReputationTitle'),
             content: dialogTemplate,
             buttons: {
                 t1: {
                     label: `${game.i18n.localize('WITCHER.ReputationButton.Save')}`,
-                    callback: async html => {
+                    callback: async _ => {
                         let statValue = this.actor.system.reputation.value;
-
-                        this.actor.system.reputation.modifiers.forEach(mod => {
-                            const noSpacesName = mod.name.replace(/\s/g, '');
-                            if (html.find(`#${noSpacesName}`)[0].checked) {
-                                statValue += Number(mod.value);
-                            }
-                        });
 
                         let messageData = new ChatMessageData(this.actor);
                         messageData.flavor = `
@@ -145,15 +66,8 @@ export let statMixin = {
                 },
                 t2: {
                     label: `${game.i18n.localize('WITCHER.ReputationButton.FaceDown')}`,
-                    callback: async html => {
+                    callback: async _ => {
                         let repValue = this.actor.system.reputation.value;
-
-                        this.actor.system.reputation.modifiers.forEach(mod => {
-                            const noSpacesName = mod.name.replace(/\s/g, '');
-                            if (html.find(`#${noSpacesName}`)[0].checked) {
-                                repValue += Number(mod.value);
-                            }
-                        });
 
                         let messageData = new ChatMessageData(this.actor);
                         let rollFormula = `1d10 + ${Number(repValue)}[${game.i18n.localize('WITCHER.Reputation')}] + ${Number(this.actor.system.stats.will.value)}[${game.i18n.localize('WITCHER.StWill')}]`;
@@ -209,11 +123,6 @@ export let statMixin = {
         html = $(html);
         html.find('.stat-roll').on('click', this._onStatSaveRoll.bind(this));
         html.find('.reputation-roll').on('click', this._onReputation.bind(this));
-
-        html.find('.stat-modifier-display').on('click', this._onStatModifierDisplay.bind(this));
-
-        html.find('.delete-stat').on('click', this._onRemoveStatModifier.bind(this));
-        html.find('.list-mod-edit').on('blur', this._onEditStatModifier.bind(this));
 
         html.find('.luck-minus').on('click', this._onLuckMinus.bind(this));
         html.find('.luck-reset').on('click', this._onLuckReset.bind(this));

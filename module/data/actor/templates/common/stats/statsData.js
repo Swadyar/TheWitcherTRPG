@@ -34,31 +34,31 @@ export default class Stats extends foundry.abstract.DataModel {
 
     /** @inheritdoc */
     static migrateData(source) {
-        if (source.int.unmodifiedMax == 0) {
+        if (source.int?.unmodifiedMax == 0) {
             source.int.unmodifiedMax = source.int.max;
         }
-        if (source.ref.unmodifiedMax == 0) {
+        if (source.ref?.unmodifiedMax == 0) {
             source.ref.unmodifiedMax = source.ref.max;
         }
-        if (source.dex.unmodifiedMax == 0) {
+        if (source.dex?.unmodifiedMax == 0) {
             source.dex.unmodifiedMax = source.dex.max;
         }
-        if (source.body.unmodifiedMax == 0) {
+        if (source.body?.unmodifiedMax == 0) {
             source.body.unmodifiedMax = source.body.max;
         }
-        if (source.spd.unmodifiedMax == 0) {
+        if (source.spd?.unmodifiedMax == 0) {
             source.spd.unmodifiedMax = source.spd.max;
         }
-        if (source.emp.unmodifiedMax == 0) {
+        if (source.emp?.unmodifiedMax == 0) {
             source.emp.unmodifiedMax = source.emp.max;
         }
-        if (source.cra.unmodifiedMax == 0) {
+        if (source.cra?.unmodifiedMax == 0) {
             source.cra.unmodifiedMax = source.cra.max;
         }
-        if (source.will.unmodifiedMax == 0) {
+        if (source.will?.unmodifiedMax == 0) {
             source.will.unmodifiedMax = source.will.max;
         }
-        if (source.luck.unmodifiedMax == 0) {
+        if (source.luck?.unmodifiedMax == 0) {
             source.luck.unmodifiedMax = source.luck.max;
         }
         if (source.toxicity?.unmodifiedMax == 0) {

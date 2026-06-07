@@ -1,4 +1,3 @@
-import critWound from './templates/common/critWoundData.js';
 import currency from './templates/common/currencyData.js';
 import adrenaline from './templates/common/adrenalineData.js';
 import skills from './templates/common/skills/skillsData.js';
@@ -30,7 +29,6 @@ export default class CommonActorData extends foundry.abstract.TypeDataModel {
                 })
             }),
             deathSaves: new fields.NumberField({ initial: 0 }),
-            critWounds: new fields.ArrayField(new fields.SchemaField(critWound())),
 
             stats: new fields.EmbeddedDataField(Stats),
             derivedStats: new fields.EmbeddedDataField(DerivedStats),
