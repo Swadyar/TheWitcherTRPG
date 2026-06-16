@@ -8,6 +8,7 @@ import DefenseProperties from './templates/combat/defensePropertiesData.js';
 import itemEffect from './templates/itemEffectData.js';
 
 import RegionProperties from './templates/regions/regionPropertiesData.js';
+import TemplateProperties from './templates/regions/templatePropertiesData.js';
 
 const fields = foundry.data.fields;
 
@@ -31,10 +32,7 @@ export default class SpellData extends CommonItemData {
             duration: new fields.StringField({ initial: '' }),
             defence: new fields.StringField({ initial: '' }),
 
-            createTemplate: new fields.BooleanField({ initial: false }),
-            templateSize: new fields.NumberField({ initial: 0 }),
-            templateType: new fields.StringField({ initial: '' }),
-            visualEffectDuration: new fields.NumberField(),
+            templateProperties: new fields.EmbeddedDataField(TemplateProperties),
             regionProperties: new fields.EmbeddedDataField(RegionProperties),
 
             causeDamages: new fields.BooleanField({ initial: false }),
@@ -92,17 +90,10 @@ export default class SpellData extends CommonItemData {
 
         this.effects?.forEach(effect => (effect.percentage = parseInt(effect.percentage)));
 
-        this.migrateTemplateSize(source);
         migrateDamageProperties(source);
         this.migrateEffectsToTypedField(source);
-
+        this.migrateTemplate(source);
         return super.migrateData(source);
-    }
-
-    static migrateTemplateSize(source) {
-        if (typeof source.templateSize === 'string' || source.templateSize instanceof String) {
-            source.templateSize = parseInt(source.templateSize) || 0;
-        }
     }
 
     static migrateEffectsToTypedField(source) {
@@ -120,6 +111,25 @@ export default class SpellData extends CommonItemData {
                     return [foundry.utils.randomID(), o];
                 })
             );
+        }
+    }
+
+    static migrateTemplate(source) {
+        if (source.templateSize) {
+            if (typeof source.templateSize === 'string' || source.templateSize instanceof String) {
+                source.templateSize = parseInt(source.templateSize) || 0;
+            }
+
+            source.templateProperties = {};
+            source.templateProperties.createTemplate = source.createTemplate;
+            source.templateProperties.templateSize = source.templateSize;
+            source.templateProperties.templateType = source.templateType;
+            source.templateProperties.visualEffectDuration = source.visualEffectDuration;
+
+            delete source.createTemplate;
+            delete source.templateSize;
+            delete source.templateType;
+            delete source.visualEffectDuration;
         }
     }
 }
