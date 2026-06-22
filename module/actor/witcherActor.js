@@ -18,7 +18,6 @@ import { currencyConverterMixin } from './mixins/currencyConverterMixin.js';
 import { adrenalineMixin } from './mixins/adrenalineMixin.js';
 import { skillMixin } from './mixins/skillMixin.js';
 
-
 export default class WitcherActor extends Actor {
     /**
      * An array of ActiveEffect instances which are present on the Actor or Items which have a limited duration.
@@ -263,7 +262,7 @@ export default class WitcherActor extends Actor {
             await foundItem.update({ 'system.quantity': Number(foundItem.system.quantity) + Number(numberOfItem) });
         } else {
             //if toObject cannot be called, we dont have a source => we dont need to call toObject
-            let newItem = addItem.toObject ? addItem.toObject(false) : addItem;
+            let newItem = addItem.toObject ? addItem.toObject() : addItem;
 
             if (numberOfItem) {
                 newItem.system.quantity = Number(numberOfItem);

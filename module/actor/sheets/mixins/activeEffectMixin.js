@@ -62,7 +62,7 @@ export let activeEffectMixin = {
                         icon: 'icons/svg/aura.svg',
                         origin: caller.uuid,
                         duration: {
-                            rounds: li.dataset.effectType === 'temporary' ? 1 : undefined
+                            value: li.dataset.effectType === 'temporary' ? 1 : null
                         },
                         disabled: li.dataset.effectType === 'inactive'
                     }
