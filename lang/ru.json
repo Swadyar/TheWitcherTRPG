@@ -1138,16 +1138,16 @@
             "disguise": {
                 "label": "Маскировка"
             },
-            "firstAid": {
+            "firstaid": {
                 "label": "Первая помощь"
             },
             "forgery": {
                 "label": "Подделывание"
             },
-            "pickLock": {
+            "picklock": {
                 "label": "Взлом замков"
             },
-            "trapCrafting": {
+            "trapcraft": {
                 "label": "Знание ловушек (2)",
                 "rollLabel": "Знание ловушек"
             },

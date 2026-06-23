@@ -1160,16 +1160,16 @@
             "disguise": {
                 "label": "Déguisement"
             },
-            "firstAid": {
+            "firstaid": {
                 "label": "Premiers soins"
             },
             "forgery": {
                 "label": "Contrefaçon"
             },
-            "pickLock": {
+            "picklock": {
                 "label": "Crochetage"
             },
-            "trapCrafting": {
+            "trapcraft": {
                 "label": "Fabrication de pièges (2)",
                 "rollLabel": "Fabrication de pièges"
             },

@@ -1158,16 +1158,16 @@
             "disguise": {
                 "label": "Disfraz"
             },
-            "firstAid": {
+            "firstaid": {
                 "label": "Primeros Auxilios"
             },
             "forgery": {
                 "label": "Falsificación"
             },
-            "pickLock": {
+            "picklock": {
                 "label": "Abrir Cerraduras"
             },
-            "trapCrafting": {
+            "trapcraft": {
                 "label": "Preparar Trampas (2)",
                 "rollLabel": "Preparar Trampas"
             },
