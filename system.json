@@ -156,30 +156,30 @@
             "loot": {}
         },
         "Item": {
-            "valuable": {},
-            "weapon": {},
-            "armor": {},
-            "enhancement": {},
-            "mount": {},
             "alchemical": {},
+            "armor": {},
             "component": {},
+            "container": {},
             "criticalWound": {
                 "htmlFields": ["description"]
             },
             "diagrams": {},
-            "mutagen": {},
-            "spell": {},
+            "enhancement": {},
             "hex": {},
-            "ritual": {},
+            "homeland": {},
+            "mount": {},
+            "mutagen": {},
+            "note": {},
             "profession": {
                 "htmlFields": ["notes", "definingSkill.definition", "*.*.definition"]
             },
-            "homeland": {},
-            "note": {},
             "race": {
                 "htmlFields": ["description", "*.description"]
             },
-            "effect": {}
+            "ritual": {},
+            "spell": {},
+            "valuable": {},
+            "weapon": {}
         },
         "ChatMessage": {
             "attack": {},
