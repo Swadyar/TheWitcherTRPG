@@ -159,7 +159,7 @@ export let castSpellMixin = {
             rollFormula += !displayRollDetails ? ` -3` : ` -3[${game.i18n.localize('WITCHER.Dialog.attackExtra')}]`;
         }
 
-        templateInfo.spellSource = 'WITCHER.Spell.' + spellItem.system.source;
+        templateInfo.spellSource = spellItem.system.source ? 'WITCHER.Spell.' + spellItem.system.source : null;
 
         if (spellItem.system.duration) {
             let durationText = spellItem.system.duration;
@@ -233,7 +233,7 @@ export let castSpellMixin = {
             }
         );
 
-        damage.properties = damage.properties.toObject(false);
+        damage.properties = damage.properties?.toObject(false);
 
         let messageData = new ChatMessageData(this, chatMessage, 'attack', {
             attacker: this.uuid,
@@ -250,18 +250,18 @@ export let castSpellMixin = {
         spellItem.system.createSpellVisuals?.(roll, damage, { stamina: origStaCost });
 
         if (!roll.options.fumble) {
-            Object.values(spellItem.system.selfEffects)?.forEach(effect =>
+            Object.values(spellItem.system.selfEffects ?? {})?.forEach(effect =>
                 applyStatusEffectToActor(this.uuid, effect.statusEffect, damage.duration)
             );
             applyActiveEffectToActor(
                 this.uuid,
-                spellItem.effects.filter(effect => effect.system.applySelf),
+                spellItem.effects?.filter(effect => effect.system.applySelf),
                 damage.duration
             );
 
             applyStatusEffectToTargets(spellItem.system.onCastEffects, damage.duration);
             applyActiveEffectToTargets(
-                spellItem.effects.filter(effect => effect.system.applyOnTarget),
+                spellItem.effects?.filter(effect => effect.system.applyOnTarget),
                 damage.duration
             );
         }
