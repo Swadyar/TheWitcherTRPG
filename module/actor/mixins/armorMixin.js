@@ -203,32 +203,28 @@ export let armorMixin = {
         return 0;
     },
 
-    calculateArmorResistances(totalDamage, damage, armorSet) {
+    calculateArmorResistances(damageInstance, damage, armorSet) {
         let properties = damage.properties;
         if (properties.armorPiercing || properties.improvedArmorPiercing) {
-            return totalDamage;
-        }
-
-        let damageAfterResistances = totalDamage;
-
-        if (
-            !properties.bypassesWornArmor &&
-            (armorSet['lightArmor']?.system.resistance[damage.type] ||
-                armorSet['mediumArmor']?.system.resistance[damage.type] ||
-                armorSet['heavyArmor']?.system.resistance[damage.type])
-        ) {
-            damageAfterResistances = Math.floor(0.5 * totalDamage);
-        }
-
-        if (armorSet['naturalArmor']?.system.resistance[damage.type] && !properties.bypassesNaturalArmor) {
-            damageAfterResistances = Math.floor(0.5 * totalDamage);
+            return damageInstance;
         }
 
         let damageMulti = this.getMultiDamageMod(damage);
 
-        damageAfterResistances = Math.floor(damageAfterResistances * damageMulti);
+        if (
+            !properties.bypassesWornArmor &&
+            (armorSet['lightArmor']?.system.resistance[damageInstance.type] ||
+                armorSet['mediumArmor']?.system.resistance[damageInstance.type] ||
+                armorSet['heavyArmor']?.system.resistance[damageInstance.type])
+        ) {
+            damageInstance.damage = Math.floor(0.5 * damageInstance.damage * damageMulti);
+        }
 
-        return damageAfterResistances;
+        if (armorSet['naturalArmor']?.system.resistance[damage.type] && !properties.bypassesNaturalArmor) {
+            damageInstance.damage = Math.floor(0.5 * damageInstance.damage * damageMulti);
+        }
+
+        return damageInstance;
     },
 
     async applySpDamage(location, properties, armorSet) {
