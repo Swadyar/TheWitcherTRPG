@@ -8,7 +8,7 @@
             "container": "Behälter",
             "diagrams": "Diagramm",
             "enhancement": "Verbesserung",
-			"hex": "Verhexungen",
+            "hex": "Verhexungen",
             "homeland": "Herkunft",
             "mount": "Reittier",
             "mutagen": "Mutagen",
@@ -96,7 +96,7 @@
             "Stat.Cra": "HAN",
             "Stat.Will": "WIL",
             "Stat.Luck": "GLÜ",
-	        "Stat.Toxicity": "Toxizität",
+            "Stat.Toxicity": "Toxizität",
             "StatTitle.LableLeft": "Eigensch.",
             "StatTitle.ModMax": "Mod / Max",
             "StatTitle.Derived": "Abgeleitet",
@@ -434,7 +434,7 @@
             "electricity": "Elektrizität",
             "fire": "Feuer",
             "ice": "Eis"
-	    },
+        },
         "profession": {
             "skillPath": {
                 "skill": {
@@ -893,9 +893,9 @@
         "Resources.modifiers": "Ressourcenmodifikatoren",
         "Notes": "Notizen",
         "Skills": {
-	    "Name": "Fertigkeit",
+            "Name": "Fertigkeit",
             "SkillGroups": {
-		"name": "Fertigkeitsgruppen",
+                "name": "Fertigkeitsgruppen",
                 "allSkills": "Alle Fertigkeiten",
                 "meleeSkills": "Nahkampffertigkeiten",
                 "rangedSkills": "Fernkampffertigkeiten",
@@ -1069,7 +1069,7 @@
             "Rolled": "Gewürfelt",
             "Applied": "Angewendet",
             "Failed": "Fehlgeschlagen",
-			"applySelf": "Wende aktiven Effekt bei Verwendung auf sich selbst an",
+            "applySelf": "Wende aktiven Effekt bei Verwendung auf sich selbst an",
             "applyOnTarget": "Wende aktiven Effekt bei Verwendung auf das Ziel an",
             "applyOnHit": "Wende aktiven Effekt bei einem Treffer an",
             "applyOnDamage": "Wende aktiven Effekt bei Verwendung auf den Schaden an",

@@ -148,5 +148,46 @@
     "secondaryTokenAttribute": "resources.power",
     "url": "AUTOMATICALLY REPLACED BY GITHUB WORKFLOW ACTION",
     "manifest": "AUTOMATICALLY REPLACED BY GITHUB WORKFLOW ACTIONn",
-    "download": "AUTOMATICALLY REPLACED BY GITHUB WORKFLOW ACTION"
+    "download": "AUTOMATICALLY REPLACED BY GITHUB WORKFLOW ACTION",
+    "documentTypes": {
+        "Actor": {
+            "character": {},
+            "monster": {},
+            "loot": {}
+        },
+        "Item": {
+            "alchemical": {},
+            "armor": {},
+            "component": {},
+            "container": {},
+            "criticalWound": {
+                "htmlFields": ["description"]
+            },
+            "diagrams": {},
+            "enhancement": {},
+            "hex": {},
+            "homeland": {},
+            "mount": {},
+            "mutagen": {},
+            "note": {},
+            "profession": {
+                "htmlFields": ["notes", "definingSkill.definition", "*.*.definition"]
+            },
+            "race": {
+                "htmlFields": ["description", "*.description"]
+            },
+            "ritual": {},
+            "spell": {},
+            "valuable": {},
+            "weapon": {}
+        },
+        "ChatMessage": {
+            "attack": {},
+            "defense": {},
+            "damage": {}
+        },
+        "ActiveEffect": {
+            "temporaryItemImprovement": {}
+        }
+    }
 }

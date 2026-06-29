@@ -52,7 +52,8 @@
         <div class="spell-template-damage">
             <div>
                 <label>{{localize "WITCHER.Spell.CreateTemplate"}}</label>
-                <input type="checkbox" name="system.createTemplate" {{checked item.system.createTemplate}} />
+                <input type="checkbox" name="system.templateProperties.createTemplate"
+                    {{checked item.system.templateProperties.createTemplate}} />
             </div>
             <div>
                 <label>{{localize "WITCHER.Spell.Damage"}}</label>
@@ -69,7 +70,7 @@
         </div>
         <table class="item-table">
             <tr>
-                {{#if (eq item.system.createTemplate true)}}
+                {{#if (eq item.system.templateProperties.createTemplate true)}}
                     <th>{{localize "WITCHER.Spell.Size"}} ({{localize "WITCHER.Spell.meters"}})</th>
                     <th>{{localize "WITCHER.Spell.Type"}}</th>
                     <th>{{localize "WITCHER.Spell.VisualEffectDuration"}}</th>
@@ -85,19 +86,19 @@
                 {{/if}}
             </tr>
             <tr>
-                {{#if (eq item.system.createTemplate true)}}
+                {{#if (eq item.system.templateProperties.createTemplate true)}}
                     <td>
-                        <input class="medium" placeholder="0" name="system.templateSize" type="text"
-                            value="{{item.system.templateSize}}" />
+                        <input class="medium" placeholder="0" name="system.templateProperties.templateSize" type="text"
+                            value="{{item.system.templateProperties.templateSize}}" />
                     </td>
                     <td>
-                        <select name="system.templateType">
-                            {{selectOptions selects.templateType selected=item.system.templateType localize=true}}
+                        <select name="system.templateProperties.templateType">
+                            {{selectOptions selects.templateType selected=item.system.templateProperties.templateType localize=true}}
                         </select>
                     </td>
                     <td>
-                        <input class="medium" placeholder="0" name="system.visualEffectDuration" type="number"
-                            value="{{item.system.visualEffectDuration}}" />
+                        <input class="medium" placeholder="0" name="system.templateProperties.visualEffectDuration"
+                            type="number" value="{{item.system.templateProperties.visualEffectDuration}}" />
                     </td>
                 {{/if}}
                 {{#if (eq item.system.causeDamages true)}}

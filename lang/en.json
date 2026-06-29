@@ -378,7 +378,6 @@
             "oilDmg": "Add Oil Damages (+5)",
             "shield": "Shield",
             "silverDmg": "Add Silver Damages",
-            "silver": "Silver",
             "oil": "Oil",
             "activeEffect": "Active Effect"
         },
@@ -468,6 +467,7 @@
             "slashing": "Slashing",
             "piercing": "Piercing",
             "elemental": "Elemental",
+            "silver": "Silver",
             "electricity": "Electricity",
             "fire": "Fire",
             "ice": "Ice"
@@ -1158,16 +1158,16 @@
             "disguise": {
                 "label": "Disguise"
             },
-            "firstAid": {
+            "firstaid": {
                 "label": "First Aid"
             },
             "forgery": {
                 "label": "Forgery"
             },
-            "pickLock": {
+            "picklock": {
                 "label": "Pick Lock"
             },
-            "trapCrafting": {
+            "trapcraft": {
                 "label": "Trap Crafting (2)",
                 "rollLabel": "Trap Crafting"
             },

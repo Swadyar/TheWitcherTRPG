@@ -31,23 +31,6 @@ export default class WitcherActiveEffect extends ActiveEffect {
         return this.type === 'temporaryItemImprovement';
     }
 
-    /**
-     * Determine whether the ActiveEffect requires a duration update.
-     * True if the worldTime has changed for an effect whose duration is tracked in seconds.
-     * True if the combat turn has changed for an effect tracked in turns where the effect target is a combatant.
-     * @returns {boolean}
-     * @protected
-     */
-    _requiresDurationUpdate() {
-        const { _worldTime, _combatTime, type } = this.duration;
-        if (type === 'seconds') return game.time.worldTime !== _worldTime;
-        if (type === 'turns' && game.combat) {
-            const ct = this._getCombatTime(game.combat.round, game.combat.turn);
-            return ct !== _combatTime && !!(this.target?.inCombat ?? this.target?.parent?.inCombat);
-        }
-        return false;
-    }
-
     /* -------------------------------------------- */
     /*  Event Handlers                              */
     /* -------------------------------------------- */

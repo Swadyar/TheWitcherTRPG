@@ -1,6 +1,8 @@
 <h2><img src="{{spellItem.img}}" class="item-img" />{{spellItem.name}}</h2>
 <div><b>{{localize "WITCHER.Spell.StaCost"}}: </b>{{templateInfo.staCostDisplay}}</div>
-<div><b>{{localize "WITCHER.Mutagen.Source"}}: </b>{{localize templateInfo.spellSource }}</div>
+{{#if templateInfo.spellSource}}
+    <div><b>{{localize "WITCHER.Mutagen.Source"}}: </b>{{localize templateInfo.spellSource }}</div>
+{{/if}}
 <div><b>{{localize "WITCHER.Spell.Effect"}}: </b>{{spellItem.system.effect}}</div>
 {{#if spellItem.system.range}}
     <div><b>{{localize "WITCHER.Spell.Range"}}: </b>{{spellItem.system.range}}</div>

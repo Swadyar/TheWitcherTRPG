@@ -127,7 +127,7 @@ export default class WitcherConfigurationSheet extends HandlebarsApplicationMixi
                         icon: this.document.img,
                         origin: this.document.uuid,
                         duration: {
-                            rounds: li.dataset.effectType === 'temporary' ? 1 : undefined
+                            value: li.dataset.effectType === 'temporary' ? 1 : null
                         },
                         disabled: li.dataset.effectType === 'inactive'
                     }

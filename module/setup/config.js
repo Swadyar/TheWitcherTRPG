@@ -497,7 +497,7 @@ WITCHER.skillMap = {
     },
     firstaid: {
         attribute: WITCHER.statMap.cra,
-        label: 'WITCHER.skills.firstAid.label',
+        label: 'WITCHER.skills.firstaid.label',
         name: 'firstaid'
     },
     forgery: {
@@ -746,6 +746,10 @@ WITCHER.damageTypes = [
     {
         value: 'elemental',
         label: 'WITCHER.DamageType.elemental'
+    },
+    {
+        value: 'silver',
+        label: 'WITCHER.DamageType.silver'
     },
     {
         value: 'electricity',

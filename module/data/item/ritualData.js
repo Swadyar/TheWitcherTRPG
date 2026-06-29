@@ -3,6 +3,7 @@ import defenseOptions from './templates/combat/defenseOptionsData.js';
 import component from './templates/componentData.js';
 import RegionProperties from './templates/regions/regionPropertiesData.js';
 import { spellVisualMixin } from './mixin/spellVisualMixin.js';
+import TemplateProperties from './templates/regions/templatePropertiesData.js';
 
 const fields = foundry.data.fields;
 
@@ -28,10 +29,7 @@ export default class RitualData extends CommonItemData {
             preparationTime: new fields.StringField({ initial: '' }),
             difficultyCheck: new fields.StringField({ initial: '' }),
 
-            createTemplate: new fields.BooleanField({ initial: false }),
-            templateSize: new fields.NumberField({ initial: 0 }),
-            templateType: new fields.StringField({ initial: '' }),
-            visualEffectDuration: new fields.NumberField(),
+            templateProperties: new fields.EmbeddedDataField(TemplateProperties),
             regionProperties: new fields.EmbeddedDataField(RegionProperties),
 
             ...defenseOptions()
@@ -66,6 +64,27 @@ export default class RitualData extends CommonItemData {
                 img: component.img
             })
         );
+    }
+
+    /** @inheritdoc */
+    static migrateData(source) {
+        this.migrateTemplate(source);
+        return super.migrateData(source);
+    }
+
+    static migrateTemplate(source) {
+        if (source.templateSize) {
+            source.templateProperties = {};
+            source.templateProperties.createTemplate = source.createTemplate;
+            source.templateProperties.templateSize = source.templateSize;
+            source.templateProperties.templateType = source.templateType;
+            source.templateProperties.visualEffectDuration = source.visualEffectDuration;
+
+            delete source.createTemplate;
+            delete source.templateSize;
+            delete source.templateType;
+            delete source.visualEffectDuration;
+        }
     }
 }
 
