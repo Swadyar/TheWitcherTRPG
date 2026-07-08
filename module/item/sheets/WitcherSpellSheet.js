@@ -57,7 +57,8 @@ export default class WitcherSpellSheet extends WitcherItemSheet {
                 rect: 'WITCHER.Spell.Square',
                 circle: 'WITCHER.Spell.Circle',
                 cone: 'WITCHER.Spell.Cone',
-                ray: 'WITCHER.Spell.Ray'
+                ray: 'WITCHER.Spell.Ray',
+                emanation: 'WITCHER.Spell.emanation'
             }
         };
     }

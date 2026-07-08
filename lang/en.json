@@ -949,6 +949,7 @@
             "Circle": "Circle",
             "Cone": "Cone",
             "Ray": "Ray",
+            "emanation": "Emanation",
             "Damage": "Cause Damages",
             "createsShield": "Creates Shield",
             "doesHeal": "Applies Heal",
