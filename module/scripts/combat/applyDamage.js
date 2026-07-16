@@ -1,3 +1,4 @@
+import { DamageInstance } from '../damageInstance.js';
 import { getInteractActor } from '../helper.js';
 
 const DialogV2 = foundry.applications.api.DialogV2;
@@ -96,23 +97,28 @@ async function createApplyDamageDialog(actor, damageObject) {
 }
 
 async function applyDamageFromStatus(actor, totalDamage, damageObject, derivedStat) {
-    actor.applyDamage(null, totalDamage, damageObject, derivedStat);
+    actor.applyDamage(null, [DamageInstance.create(totalDamage).setType(damageObject.type)], damageObject, derivedStat);
 }
 
 async function applyDamageFromMessage(actor, totalDamage, messageId, derivedStat) {
-    let damage = game.messages.get(messageId).system.damage;
+    let damageProperties = game.messages.get(messageId).system.damage;
 
-    let dialogData = await createApplyDamageDialog(actor, damage);
+    let dialogData = await createApplyDamageDialog(actor, damageProperties);
 
     if (dialogData.newLocation != 'Empty') {
-        damage.location = actor.getLocationObject(dialogData.newLocation);
+        damageProperties.location = actor.getLocationObject(dialogData.newLocation);
     }
 
     if (dialogData.addOilDmg) {
-        damage.properties.oilEffect = actor.system.category;
+        damageProperties.properties.oilEffect = actor.system.category;
     }
 
-    actor.applyDamage(dialogData, totalDamage, damage, derivedStat);
+    actor.applyDamage(
+        dialogData,
+        [DamageInstance.create(totalDamage).setType(damageProperties.type)],
+        damageProperties,
+        derivedStat
+    );
 }
 
 export { ApplyNormalDamage, ApplyNonLethalDamage, applyDamageFromStatus };

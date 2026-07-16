@@ -23,8 +23,8 @@ export let itemContextMenu = {
         return {
             label: 'WITCHER.Item.ContextMenu.edit',
             icon: '<i class="fas fa-edit"></i>',
-            callback: event => {
-                const item = this.actor.items.get(event.dataset.itemId);
+            onClick: (event, target) => {
+                const item = this.actor.items.get(target.dataset.itemId);
                 item.sheet.render(true);
             }
         };
@@ -34,7 +34,7 @@ export let itemContextMenu = {
         return {
             label: 'WITCHER.Item.ContextMenu.Consume',
             icon: '<i class="fa-solid fa-cookie-bite"></i>',
-            callback: this.consumeItem.bind(this),
+            onClick: this.consumeItem.bind(this),
             visible: this.isItemConsumable.bind(this)
         };
     },
@@ -45,8 +45,8 @@ export let itemContextMenu = {
         return item.system.isConsumable;
     },
 
-    consumeItem(itemHtml) {
-        let item = this.actor.items.get(itemHtml.dataset.itemId);
+    consumeItem(pointerEvent, target) {
+        let item = this.actor.items.get(target.dataset.itemId);
 
         if (!item.system.isConsumable) {
             return ui.notifications.error(`${game.i18n.localize('WITCHER.Item.ContextMenu.NotConsumable')}`);
@@ -72,20 +72,19 @@ export let itemContextMenu = {
         return choosenEnhancement.system.applied;
     },
 
-    removeEnhancement(itemHtml) {
-        let choosenEnhancement = this.actor.items.get(itemHtml.dataset.itemId);
+    removeEnhancement(pointerEvent, target) {
+        let choosenEnhancement = this.actor.items.get(target.dataset.itemId);
 
         choosenEnhancement.update({
             'system.applied': false,
             'name': choosenEnhancement.name.replace('(Applied)', '')
         });
 
-        let parent = this.actor.items.get(itemHtml.parentElement.closest('.item').dataset.itemId);
+        let parent = this.actor.items.get(target.parentElement.closest('.item').dataset.itemId);
 
         parent.update({
             'system.enhancementItemIds': parent.system.enhancementItemIds.filter(id => id != choosenEnhancement.id)
         });
-
     },
 
     giftableItem() {
@@ -115,8 +114,8 @@ export let itemContextMenu = {
         return giftableTypes.includes(item.type);
     },
 
-    async giftItem(itemHtml) {
-        let item = this.actor.items.get(itemHtml.dataset.itemId);
+    async giftItem(pointerEvent, target) {
+        let item = this.actor.items.get(target.dataset.itemId);
 
         let allActors = '';
         game.actors
@@ -166,8 +165,8 @@ export let itemContextMenu = {
         return item.canBeDismantled();
     },
 
-    async dismantleItem(itemHtml) {
-        let item = this.actor.items.get(itemHtml.dataset.itemId);
+    async dismantleItem(pointerEvent, target) {
+        let item = this.actor.items.get(target.dataset.itemId);
 
         item.dismantle();
     },

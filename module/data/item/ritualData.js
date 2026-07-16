@@ -2,7 +2,7 @@ import CommonItemData from './commonItemData.js';
 import defenseOptions from './templates/combat/defenseOptionsData.js';
 import component from './templates/componentData.js';
 import RegionProperties from './templates/regions/regionPropertiesData.js';
-import { spellVisualMixin } from './mixin/spellVisualMixin.js';
+import { spellRegionMixin } from './mixin/spellRegionMixin.js';
 import TemplateProperties from './templates/regions/templatePropertiesData.js';
 
 const fields = foundry.data.fields;
@@ -88,4 +88,4 @@ export default class RitualData extends CommonItemData {
     }
 }
 
-Object.assign(RitualData.prototype, spellVisualMixin);
+Object.assign(RitualData.prototype, spellRegionMixin);

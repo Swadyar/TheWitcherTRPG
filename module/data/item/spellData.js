@@ -1,6 +1,6 @@
 import { migrateDamageProperties } from '../migrations/damagePropertiesMigration.js';
 import CommonItemData from './commonItemData.js';
-import { spellVisualMixin } from './mixin/spellVisualMixin.js';
+import { spellRegionMixin } from './mixin/spellRegionMixin.js';
 import attackOptions from './templates/combat/attackOptionsData.js';
 import DamageProperties from './templates/combat/damagePropertiesData.js';
 import defenseOptions from './templates/combat/defenseOptionsData.js';
@@ -134,4 +134,4 @@ export default class SpellData extends CommonItemData {
     }
 }
 
-Object.assign(SpellData.prototype, spellVisualMixin);
+Object.assign(SpellData.prototype, spellRegionMixin);

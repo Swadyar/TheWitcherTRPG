@@ -43,7 +43,7 @@ export function addDefenseOptionsContextMenu(html, options) {
         label: `${game.i18n.localize('WITCHER.Context.Defense')}`,
         icon: '<i class="fas fa-shield-alt"></i>',
         visible: canDefend,
-        callback: async li => {
+        onClick: async li => {
             executeDefense(await getInteractActor(), li.dataset.messageId);
         }
     });
@@ -71,7 +71,7 @@ export function addCritMessageContextOptions(html, options) {
             label: `${game.i18n.localize('WITCHER.Context.applyCritDmg')}`,
             icon: '<i class="fas fa-user-minus"></i>',
             visible: wasCritted,
-            callback: async li => {
+            onClick: async li => {
                 (await getInteractActor()).applyCritDamage(game.messages.get(li.dataset.messageId).system.crit);
             }
         },
@@ -79,7 +79,7 @@ export function addCritMessageContextOptions(html, options) {
             label: `${game.i18n.localize('WITCHER.Context.applyBonusCritDmg')}`,
             icon: '<i class="fas fa-user-minus"></i>',
             visible: wasCritted,
-            callback: async li => {
+            onClick: async li => {
                 (await getInteractActor()).applyBonusCritDamage(game.messages.get(li.dataset.messageId).system.crit);
             }
         },
@@ -87,7 +87,7 @@ export function addCritMessageContextOptions(html, options) {
             label: `${game.i18n.localize('WITCHER.Context.applyCritWound')}`,
             icon: '<i class="fas fa-user-minus"></i>',
             visible: wasCritted,
-            callback: async li => {
+            onClick: async li => {
                 (await getInteractActor()).applyCritWound(game.messages.get(li.dataset.messageId).system.crit);
             }
         }

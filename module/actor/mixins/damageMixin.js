@@ -1,25 +1,26 @@
 import { getRandomInt } from '../../scripts/helper.js';
 import { applyActiveEffectToActorViaId } from '../../scripts/temporaryEffects/applyActiveEffect.js';
 import { applyStatusEffectToActor } from '../../scripts/statusEffects/applyStatusEffect.js';
+import { DamageInstance } from '../../scripts/damageInstance.js';
 
 export let damageMixin = {
-    async applyDamage(dialogData, totalDamage, damageObject, derivedStat, infoTotalDmg = totalDamage) {
+    async applyDamage(dialogData, damageInstances, damageObject, derivedStat) {
+        damageInstances = await this.handleShield(damageInstances);
+
         if (!damageObject.properties.bypassesShield) {
-            totalDamage = this.handleShield(totalDamage, infoTotalDmg);
-            if (totalDamage <= 0) {
+            if (!damageInstances.some(instance => instance.damage > 0)) {
                 return;
             }
         }
 
         if (this.system.category && damageObject.properties?.oilEffect === this.system.category) {
-            totalDamage += 5;
-            infoTotalDmg += `+5[${game.i18n.localize('WITCHER.Damage.oil')}]`;
+            damageInstances.push(DamageInstance.create(5).setType('oil').setSource('WITCHER.Damage.oil'));
         }
 
         if (damageObject.properties.damageToAllLocations) {
-            await this.applyDamageToAllLocations(dialogData, damageObject, totalDamage, infoTotalDmg, derivedStat);
+            await this.applyDamageToAllLocations(dialogData, damageObject, damageInstances, derivedStat);
         } else {
-            await this.applyDamageToLocation(dialogData, damageObject, totalDamage, infoTotalDmg, derivedStat);
+            await this.applyDamageToLocation(dialogData, damageObject, damageInstances, derivedStat);
         }
 
         damageObject.properties.effects
@@ -32,57 +33,72 @@ export let damageMixin = {
         }
     },
 
-    handleShield(totalDamage, infoTotalDmg) {
+    async handleShield(damageInstances) {
         let shield = this.system.derivedStats.shield.value;
-        if (totalDamage < shield) {
-            this.update({ 'system.derivedStats.shield.value': shield - totalDamage });
-            let messageContent = `${game.i18n.localize('WITCHER.Damage.initial')}: <span class="error-display">${infoTotalDmg}</span><br />
-                                ${game.i18n.localize('WITCHER.Damage.shield')}: <span class="error-display">${shield}</span><br />
-                                ${game.i18n.localize('WITCHER.Damage.ToMuchShield')}
-                                `;
-            let messageData = {
-                content: messageContent,
+        damageInstances.forEach(damageInstance => {
+            if (damageInstance.damage < shield) {
+                damageInstance.shielded = damageInstance.damage;
+                damageInstance.damage = 0;
+            } else {
+                damageInstance.shielded = shield;
+                damageInstance.damage -= shield;
+            }
+            shield = Math.max(shield - damageInstance.shielded, 0);
+        });
+
+        this.update({ 'system.derivedStats.shield.value': shield });
+
+        if (shield > 0) {
+            const messageTemplate = 'systems/TheWitcherTRPG/templates/chat/damage/shieldAbsorbs.hbs';
+
+            const content = await foundry.applications.handlebars.renderTemplate(messageTemplate, {
+                damageInstances: damageInstances.map(instance => instance.initialDamageText()).join(' + '),
+                shield: this.system.derivedStats.shield.value
+            });
+            const chatData = {
+                content: content,
+                style: CONST.CHAT_MESSAGE_STYLES.OTHER,
                 speaker: ChatMessage.getSpeaker({ actor: this })
             };
-            ChatMessage.applyMode(messageData, game.settings.get('core', 'messageMode'));
-            ChatMessage.create(messageData);
-            return 0;
-        } else {
-            this.update({ 'system.derivedStats.shield.value': 0 });
-            totalDamage -= shield;
+            ChatMessage.applyMode(chatData, game.settings.get('core', 'messageMode'));
+            ChatMessage.create(chatData);
         }
-        return totalDamage;
+
+        return damageInstances;
     },
 
-    async applyDamageToLocation(dialogData, damageObject, totalDamage, infoTotalDmg, derivedStat) {
-        let damageResult = await this.calculateDamageWithLocation(dialogData, damageObject, totalDamage, infoTotalDmg);
+    async applyDamageToLocation(dialogData, damageObject, damageInstances, derivedStat) {
+        let damageResult = await this.calculateDamageWithLocation(dialogData, damageObject, damageInstances);
 
         if (damageResult.blockedBySp) {
-            this.createDamageBlockedBySp(
-                damageResult.infoTotalDmg,
-                damageResult.displaySP,
-                damageResult.infoAfterSPReduction
-            );
+            this.createDamageBlockedBySp(damageResult.damageInstances, damageResult.displaySP);
             return;
         }
 
         this.createDamageResultMessage(damageResult);
-        await this.updateDerivedStat(damageResult.totalDamage, derivedStat);
+        await this.updateDerivedStat(
+            damageInstances.reduce((acc, instance) => acc + instance.damage, 0),
+            derivedStat
+        );
     },
 
-    async applyDamageToAllLocations(dialogData, damage, totalDamage, infoTotalDmg, derivedStat) {
+    async applyDamageToAllLocations(dialogData, damage, damageInstances, derivedStat) {
         let locations = this.getAllLocations().map(location => this.getLocationObject(location));
 
         let resultPromises = [];
         locations.forEach(location => {
             damage.location = location;
 
-            resultPromises.push(this.calculateDamageWithLocation(dialogData, damage, totalDamage, infoTotalDmg));
+            resultPromises.push(this.calculateDamageWithLocation(dialogData, damage, damageInstances));
         });
 
         let results = await Promise.all(resultPromises);
 
-        let totalAppliedDamage = results.reduce((acc, result) => acc + Math.floor(result.totalDamage), 0);
+        let totalAppliedDamage = results.reduce(
+            (acc, result) =>
+                acc + Math.floor(result.damageInstances.reduce((acc, instance) => acc + instance.damage, 0)),
+            0
+        );
 
         const messageTemplate = 'systems/TheWitcherTRPG/templates/chat/damage/damageToAllLocations.hbs';
         const templateContext = {
@@ -130,9 +146,9 @@ export let damageMixin = {
         });
     },
 
-    async calculateDamageWithLocation(enemyData, damage, totalDamage, infoTotalDmg) {
-        let properties = damage.properties;
-        let location = damage.location;
+    async calculateDamageWithLocation(enemyData, damageProperties, damageInstances) {
+        let properties = damageProperties.properties;
+        let location = damageProperties.location;
 
         let locationArmor = this.getLocationArmor(location, properties);
         let armorSet = locationArmor.armorSet;
@@ -140,131 +156,125 @@ export let damageMixin = {
         let displaySP = locationArmor.displaySP;
 
         if (properties.improvedArmorPiercing) {
-            totalSP = Math.ceil(totalSP / 2);
+            totalSP = Math.max(Math.ceil(totalSP / 2), 0);
             displaySP = Math.ceil(displaySP / 2);
         }
 
-        let silverDamage = 0;
-
         if (game.settings.get('TheWitcherTRPG', 'silverTrait')) {
             if (properties?.silverTrait) {
-                silverDamage = totalDamage;
-                totalDamage = 0;
+                damageInstances[0].setType = 'silver';
             }
         } else {
             if (properties?.silverDamage && enemyData?.resistNonSilver) {
-                let multi = damage.strike === 'strong' ? '*2' : '';
-                let silverRoll = await new Roll(damage.properties.silverDamage + multi).evaluate();
-                silverDamage = silverRoll.total;
-                infoTotalDmg += `+${silverDamage}[${game.i18n.localize('WITCHER.Damage.silver')}]`;
+                let multi = damageProperties.strike === 'strong' ? '*2' : '';
+                let silverRoll = await new Roll(damageProperties.properties.silverDamage + multi).evaluate();
+                damageInstances.push(
+                    DamageInstance.create(silverRoll.total).setType('silver').setSource('WITCHER.DamageType.silver')
+                );
             }
         }
 
-        totalDamage -= totalSP < 0 ? 0 : totalSP;
-        if (totalDamage < 0) {
-            silverDamage = silverDamage + totalDamage > 0 ? silverDamage + totalDamage : 0;
-        }
-
-        let infoAfterSPReduction = totalDamage < 0 ? 0 : totalDamage;
-        if (silverDamage) {
-            infoAfterSPReduction += `+${silverDamage}[${game.i18n.localize('WITCHER.Damage.silver')}]`;
-        }
+        damageInstances.forEach(instance => {
+            if (instance.damage > totalSP) {
+                instance.damage -= totalSP;
+                totalSP = 0;
+            } else {
+                totalSP -= instance.damage;
+                instance.damage = 0;
+            }
+            instance.afterSp = instance.damage;
+        });
 
         let spDamage = await this.applyAlwaysSpDamage(location, properties, armorSet);
 
-        if (totalDamage <= 0 && silverDamage <= 0) {
+        if (!damageInstances.some(instance => instance.damage > 0)) {
             return {
                 blockedBySp: true,
-                totalDamage: 0,
-                infoTotalDmg,
+                damageInstances,
                 displaySP,
-                infoAfterSPReduction,
                 location,
                 spDamage
             };
         }
 
-        let flatDamageMod = this.getFlatDamageMod(damage);
+        let flatDamageMod = this.getFlatDamageMod(damageProperties);
 
-        totalDamage = Math.max(Math.floor(location.formula * totalDamage), 0);
-        silverDamage = Math.max(Math.floor(location.formula * silverDamage), 0);
-        let infoAfterLocation = totalDamage;
-        if (flatDamageMod) {
-            infoAfterLocation += `+${location.formula * flatDamageMod}[${game.i18n.localize('WITCHER.Damage.activeEffect')}]`;
+        if (flatDamageMod > 0) {
+            damageInstances.push(DamageInstance.create(flatDamageMod).setSource('WITCHER.Damage.activeEffect'));
         }
 
-        if (silverDamage) {
-            infoAfterLocation += `+${silverDamage}[${game.i18n.localize('WITCHER.Damage.silver')}]`;
-        }
+        damageInstances.forEach(instance => {
+            instance.damage = Math.max(Math.floor(location.formula * instance.damage), 0);
+            instance.afterLocation = instance.damage;
+        });
 
-        totalDamage = this.calculateArmorResistances(totalDamage, damage, armorSet);
+        damageInstances.forEach(instance => {
+            let damageTypeConfig = CONFIG.WITCHER.damageTypes.find(type => type.value === instance.type);
 
-        let damageTypeConfig = CONFIG.WITCHER.damageTypes.find(type => type.value === damage.type);
-        //Enemy is suspectible to silver
-        if (
-            (enemyData?.resistNonSilver && !properties?.silverDamage && !damageTypeConfig.likeSilver) ||
-            (enemyData?.resistNonMeteorite && !properties?.isMeteorite && !damageTypeConfig.likeMeteorite)
-        ) {
-            totalDamage = Math.floor(0.5 * totalDamage);
-        }
+            instance = this.calculateArmorResistances(instance, damageProperties, armorSet);
 
-        //Enemy is not suspectible to silver
-        if (
-            game.settings.get('TheWitcherTRPG', 'silverTrait') &&
-            !enemyData?.resistNonSilver &&
-            properties.silverTrait
-        ) {
-            silverDamage = Math.floor(0.5 * silverDamage);
-        }
+            //Enemy is suspectible to silver
+            if (
+                (enemyData?.resistNonSilver && !properties?.silverDamage && !damageTypeConfig.likeSilver) ||
+                (enemyData?.resistNonMeteorite && !properties?.isMeteorite && !damageTypeConfig.likeMeteorite)
+            ) {
+                instance.damage = Math.floor(0.5 * instance.damage);
+            }
 
-        let infoAfterResistance = totalDamage;
-        if (silverDamage) {
-            totalDamage += silverDamage;
-            infoAfterResistance += `+${silverDamage}[${game.i18n.localize('WITCHER.Damage.silver')}]`;
-        }
+            //Enemy is not suspectible to silver
+            if (!enemyData?.resistNonSilver && instance.type === 'silver') {
+                instance.damage = Math.floor(0.5 * instance.damage);
+            }
 
-        if (enemyData?.isVulnerable) {
-            totalDamage *= 2;
-            silverDamage *= 2;
-        }
+            if (enemyData?.isVulnerable) {
+                instance.damage *= 2;
+            }
+
+            instance.afterResistance = instance.damage;
+        });
 
         spDamage += await this.applySpDamage(location, properties, armorSet);
 
         return {
-            totalDamage,
-            infoTotalDmg,
+            damageInstances,
             displaySP,
             properties,
-            infoAfterSPReduction,
-            infoAfterLocation,
-            infoAfterResistance,
-            totalDamage,
             spDamage,
             location
         };
     },
 
-    async createDamageBlockedBySp(infoTotalDmg, displaySP, infoAfterSPReduction) {
-        let messageContent = `${game.i18n.localize('WITCHER.Damage.initial')}: <span class="error-display">${infoTotalDmg}</span><br />
-        ${game.i18n.localize('WITCHER.Damage.totalSP')}: <span class="error-display">${displaySP}</span><br />
-        ${game.i18n.localize('WITCHER.Damage.afterSPReduct')} <span class="error-display">${infoAfterSPReduction}</span><br /><br />
-        ${game.i18n.localize('WITCHER.Damage.NotEnough')}
-        `;
+    async createDamageBlockedBySp(damageInstances, displaySP) {
+        const messageTemplate = 'systems/TheWitcherTRPG/templates/chat/damage/spAbsorbs.hbs';
 
-        let messageData = {
-            content: messageContent,
+        const content = await foundry.applications.handlebars.renderTemplate(messageTemplate, {
+            initialDamage: damageInstances.map(instance => instance.initialDamageText()).join(' + '),
+            displaySP: displaySP
+        });
+        const chatData = {
+            content: content,
+            style: CONST.CHAT_MESSAGE_STYLES.OTHER,
             speaker: ChatMessage.getSpeaker({ actor: this })
         };
-
-        let rollResult = await new Roll('1').evaluate();
-        ChatMessage.applyMode(messageData, game.settings.get('core', 'messageMode'));
-        rollResult.toMessage(messageData);
+        ChatMessage.applyMode(chatData, game.settings.get('core', 'messageMode'));
+        ChatMessage.create(chatData);
     },
 
     async createDamageResultMessage(damageResult) {
         const messageTemplate = 'systems/TheWitcherTRPG/templates/chat/damage/damageToLocation.hbs';
 
-        const content = await foundry.applications.handlebars.renderTemplate(messageTemplate, damageResult);
+        const damageInstances = damageResult.damageInstances;
+
+        const content = await foundry.applications.handlebars.renderTemplate(messageTemplate, {
+            damageProperties: damageResult.damageProperties,
+            spDamage: damageResult.spDamage,
+            displaySP: damageResult.displaySP,
+            initialDamage: damageInstances.map(instance => instance.initialDamageText()).join(' + '),
+            afterSPReduction: damageInstances.map(instance => instance.afterSpText()).join(' + '),
+            afterLocation: damageInstances.map(instance => instance.afterLocationText()).join(' + '),
+            afterResistance: damageInstances.map(instance => instance.afterResistanceText()).join(' + '),
+            finalDamage: damageInstances.map(instance => instance.damageText()).join(' + ')
+        });
         const chatData = {
             content: content,
             speaker: ChatMessage.getSpeaker({ actor: this }),
@@ -278,7 +288,7 @@ export let damageMixin = {
     async applyCritDamage(crit) {
         this.applyDamage(
             null,
-            crit.critdamage,
+            [DamageInstance.create(crit.critdamage).setSource('Types.Item.criticalWound')],
             {
                 properties: { bypassesNaturalArmor: true, bypassesWornArmor: true },
                 location: this.getLocationObject('torso')
@@ -290,7 +300,7 @@ export let damageMixin = {
     async applyBonusCritDamage(crit) {
         this.applyDamage(
             null,
-            crit.bonusdamage,
+            [DamageInstance.create(crit.bonusdamage).setSource('Types.Item.criticalWound')],
             {
                 properties: { bypassesNaturalArmor: true, bypassesWornArmor: true },
                 location: this.getLocationObject('torso')
