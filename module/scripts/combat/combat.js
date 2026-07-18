@@ -43,8 +43,8 @@ export function addDefenseOptionsContextMenu(html, options) {
         label: `${game.i18n.localize('WITCHER.Context.Defense')}`,
         icon: '<i class="fas fa-shield-alt"></i>',
         visible: canDefend,
-        onClick: async li => {
-            executeDefense(await getInteractActor(), li.dataset.messageId);
+        onClick: async (pointer, target) => {
+            executeDefense(await getInteractActor(), target.dataset.messageId);
         }
     });
     return options;
@@ -71,24 +71,24 @@ export function addCritMessageContextOptions(html, options) {
             label: `${game.i18n.localize('WITCHER.Context.applyCritDmg')}`,
             icon: '<i class="fas fa-user-minus"></i>',
             visible: wasCritted,
-            onClick: async li => {
-                (await getInteractActor()).applyCritDamage(game.messages.get(li.dataset.messageId).system.crit);
+            onClick: async (pointer, target) => {
+                (await getInteractActor()).applyCritDamage(game.messages.get(target.dataset.messageId).system.crit);
             }
         },
         {
             label: `${game.i18n.localize('WITCHER.Context.applyBonusCritDmg')}`,
             icon: '<i class="fas fa-user-minus"></i>',
             visible: wasCritted,
-            onClick: async li => {
-                (await getInteractActor()).applyBonusCritDamage(game.messages.get(li.dataset.messageId).system.crit);
+            onClick: async (pointer, target) => {
+                (await getInteractActor()).applyBonusCritDamage(game.messages.get(target.dataset.messageId).system.crit);
             }
         },
         {
             label: `${game.i18n.localize('WITCHER.Context.applyCritWound')}`,
             icon: '<i class="fas fa-user-minus"></i>',
             visible: wasCritted,
-            onClick: async li => {
-                (await getInteractActor()).applyCritWound(game.messages.get(li.dataset.messageId).system.crit);
+            onClick: async (pointer, target) => {
+                (await getInteractActor()).applyCritWound(game.messages.get(target.dataset.messageId).system.crit);
             }
         }
     );
